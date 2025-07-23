@@ -1,0 +1,60 @@
+{
+  "platforms": {
+    "android": {
+      "devices": {
+        "pixel8": {
+          "platformName": "Android",
+          "platformVersion": "15",
+          "automationName": "UiAutomator2",
+          "deviceName": "Pixel_8_Pro",
+          "appPackage": "com.anhtester.mobile_app.taurus",
+          "appActivity": "com.anhtester.mobile_app.taurus.MainActivity",
+          "appAndroidPath": "src/test/resources/apps/flutter-app-release.apk",
+          "noReset": false,
+          "fullReset": false,
+          "autoGrantPermissions": true
+        },
+        "pixel9": {
+          "platformName": "Android",
+          "platformVersion": "16",
+          "automationName": "UiAutomator2",
+          "deviceName": "Pixel_9_Pro_XL",
+          "appPackage": "com.anhtester.mobile_app.taurus",
+          "appActivity": "com.anhtester.mobile_app.taurus.MainActivity",
+          "appAndroidPath": "src/test/resources/apps/flutter-app-release.apk",
+          "noReset": false,
+          "fullReset": false,
+          "autoGrantPermissions": true
+        }
+      }
+    },
+    "ios": {
+      "devices": {
+        "iphone14": {
+          "platformName": "iOS",
+          "platformVersion": "17",
+          "automationName": "XCUITest",
+          "deviceName": "iPhone 14 Pro Max",
+          "appPackage": "com.anhtester.mobile_app.taurus",
+          "appActivity": "com.anhtester.mobile_app.taurus.MainActivity",
+          "appPath": "path to app",
+          "noReset": false,
+          "fullReset": false,
+          "autoGrantPermissions": true
+        },
+        "iphone15": {
+          "platformName": "iOS",
+          "platformVersion": "18",
+          "automationName": "XCUITest",
+          "deviceName": "iPhone 15 Pro Max",
+          "appPackage": "com.anhtester.mobile_app.taurus",
+          "appActivity": "com.anhtester.mobile_app.taurus.MainActivity",
+          "appPath": "path to app",
+          "noReset": false,
+          "fullReset": false,
+          "autoGrantPermissions": true
+        }
+      }
+    }
+  }
+}
