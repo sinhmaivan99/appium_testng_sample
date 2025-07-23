@@ -31,7 +31,6 @@ public class BaseTest {
     private AppiumDriverLocalService service;
     private String HOST = "127.0.0.1";
     private String PORT = "4723";
-    private int TIMEOUT_SERVICE = 60;
     private String videoFileName;
 
     public void runAppiumServer(String host, String port) {
@@ -47,6 +46,7 @@ public class BaseTest {
         builder.withIPAddress(HOST);
         builder.usingPort(Integer.parseInt(PORT));
         builder.withArgument(GeneralServerFlag.LOG_LEVEL, "info");
+        int TIMEOUT_SERVICE = 60;
         builder.withTimeout(Duration.ofSeconds(TIMEOUT_SERVICE));
 
         service = AppiumDriverLocalService.buildService(builder);
@@ -129,9 +129,8 @@ public class BaseTest {
 
             // Tạo tên file video duy nhất dựa trên device và thread
             SystemHelpers.createFolder(SystemHelpers.getCurrentDir() + "exports/videos");
-            videoFileName = SystemHelpers.getCurrentDir() + "exports/videos/recording_" + deviceName + "_" + Thread.currentThread().getId() + "_" + SystemHelpers.makeSlug(DateUtils.getCurrentDateTime()) + ".mp4";
+            videoFileName = SystemHelpers.getCurrentDir() + "exports/videos/recording_" + deviceName + "_" + SystemHelpers.makeSlug(DateUtils.getCurrentDateTime()) + ".mp4";
             CaptureHelpers.startRecording();
-
         } catch (Exception e) {
             System.err.println("❌Lỗi nghiêm trọng khi khởi tạo driver cho thread " + Thread.currentThread().getId() + " trên device " + deviceName + ": " + e.getMessage());
             // Có thể ném lại lỗi để TestNG biết test setup thất bại
@@ -142,6 +141,8 @@ public class BaseTest {
     @AfterMethod(alwaysRun = true)
     public void tearDownDriver() {
         if (DriverManager.getDriver() != null) {
+            //Capture screen
+            CaptureHelpers.captureScreenshot();
 
             //Stop recording video
             MobileUI.sleep(2);

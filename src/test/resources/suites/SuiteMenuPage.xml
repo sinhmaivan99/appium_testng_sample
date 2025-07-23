@@ -1,6 +1,11 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 
 <suite name="Suite Regression Test" verbose="1">
+
+    <!--    <listeners>-->
+    <!--        <listener class-name="listener.TestListener"/>-->
+    <!--    </listeners>-->
+
     <parameter name="platformName" value="Android"/>
     <parameter name="platformVersion" value="16"/>
     <parameter name="deviceName" value="pixel9"/>
@@ -11,6 +16,7 @@
     <parameter name="appPackage" value="com.anhtester.mobile_app.taurus"/>
     <parameter name="appActivity" value="com.anhtester.mobile_app.taurus.MainActivity"/>
     <parameter name="noReset" value="true"/>
+
     <test name="Taurus App Test">
         <classes>
             <class name="testcases.MenuTest"/>

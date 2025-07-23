@@ -95,7 +95,7 @@ public class MobileUI {
         tap.addAction(finger.createPointerDown(PointerInput.MouseButton.LEFT.asArg()));
         tap.addAction(new Pause(finger, Duration.ofMillis(200))); //Chạm nhẹ nhanh
         tap.addAction(finger.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
-        getDriver().perform(Arrays.asList(tap));
+        getDriver().perform(List.of(tap));
     }
 
     public static void tap(int x, int y, int milliSecondDuration) {
@@ -107,7 +107,7 @@ public class MobileUI {
         tap.addAction(finger.createPointerDown(PointerInput.MouseButton.LEFT.asArg()));
         tap.addAction(new Pause(finger, Duration.ofMillis(milliSecondDuration))); //Chạm vào với thời gian chỉ định
         tap.addAction(finger.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
-        getDriver().perform(Arrays.asList(tap));
+        getDriver().perform(List.of(tap));
     }
 
     public static void zoom(WebElement element, double scale) {
@@ -396,7 +396,7 @@ public class MobileUI {
         boolean result;
         try {
             WebElement element = getDriver().findElement(locator); // Find first, then check display
-            result = element != null && element.isDisplayed();
+            result = element.isDisplayed();
             LogUtils.info("[MobileUI] Element present and displayed check result: " + result + " for locator: " + locator);
             return result;
         } catch (NoSuchElementException e) {

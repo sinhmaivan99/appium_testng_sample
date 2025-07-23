@@ -31,8 +31,8 @@ public class TestListener implements ITestListener {
         LogUtils.info("➡\uFE0F Bắt đầu chạy test case: " + result.getName());
 
         // Tạo tên file video duy nhất dựa trên device và thread
-//        SystemHelpers.createFolder(SystemHelpers.getCurrentDir() + "exports/videos");
-//        videoFileName = SystemHelpers.getCurrentDir() + "exports/videos/recording_" + deviceName + "_" + Thread.currentThread().getId() + "_" + SystemHelpers.makeSlug(DateUtils.getCurrentDateTime()) + ".mp4";
+        SystemHelpers.createFolder(SystemHelpers.getCurrentDir() + "exports/videos");
+        String videoFileName = SystemHelpers.getCurrentDir() + "exports/videos/recording_" + "_" + Thread.currentThread().getId() + "_" + SystemHelpers.makeSlug(DateUtils.getCurrentDateTime()) + ".mp4";
         CaptureHelpers.startRecording();
     }
 
@@ -45,7 +45,7 @@ public class TestListener implements ITestListener {
         String formattedDate = now.format(formatter);
         LogUtils.info("Thời gian: " + formattedDate);
 
-        CaptureHelpers.captureScreenshot(result.getName());
+        CaptureHelpers.captureScreenshot();
 
         SystemHelpers.createFolder(SystemHelpers.getCurrentDir() + "exports/videos");
         String videoFileName = SystemHelpers.getCurrentDir() + "exports/videos/recording_" + result.getName() + "_" + Thread.currentThread().getId() + "_" + SystemHelpers.makeSlug(DateUtils.getCurrentDateTime()) + ".mp4";
@@ -63,7 +63,7 @@ public class TestListener implements ITestListener {
         String formattedDate = now.format(formatter);
         LogUtils.info("Nguyên nhân lỗi: " + result.getThrowable());
 
-        CaptureHelpers.captureScreenshot(result.getName());
+        CaptureHelpers.captureScreenshot();
 
         SystemHelpers.createFolder(SystemHelpers.getCurrentDir() + "exports/videos");
         String videoFileName = SystemHelpers.getCurrentDir() + "exports/videos/recording_" + result.getName() + "_" + Thread.currentThread().getId() + "_" + SystemHelpers.makeSlug(DateUtils.getCurrentDateTime()) + ".mp4";
@@ -71,7 +71,7 @@ public class TestListener implements ITestListener {
         CaptureHelpers.stopRecording(videoFileName);
 
         //Add screenshot to Allure report
-        //AllureManager.saveTextLog(result.getName() + " is failed.");
+        AllureManager.saveTextLog(result.getName() + " is failed.");
         AllureManager.saveScreenshotPNG();
 
         //Connect Jira
@@ -89,5 +89,4 @@ public class TestListener implements ITestListener {
         MobileUI.sleep(2);
         CaptureHelpers.stopRecording(videoFileName);
     }
-
 }

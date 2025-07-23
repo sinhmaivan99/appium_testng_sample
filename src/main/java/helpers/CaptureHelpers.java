@@ -17,18 +17,13 @@ import java.time.Duration;
 import java.util.Base64;
 
 public class CaptureHelpers {
-    /**
-     * Hàm static để chụp ảnh màn hình và lưu vào đường dẫn file được chỉ định.
-     *
-     * @param fileName Đường dẫn file nơi muốn lưu ảnh chụp màn hình (ví dụ: "screenshots/image.png").
-     */
-    public static void captureScreenshot(String fileName) {
+    public static void captureScreenshot() {
         try {
             // Ép kiểu driver thành TakesScreenshot để lấy ảnh màn hình
             File srcFile = ((TakesScreenshot) DriverManager.getDriver()).getScreenshotAs(OutputType.FILE);
 
             SystemHelpers.createFolder(SystemHelpers.getCurrentDir() + "exports/screenshots");
-            String filePath = SystemHelpers.getCurrentDir() + "exports/screenshots/" + fileName + "_" + Thread.currentThread().getId() + "_" + SystemHelpers.makeSlug(DateUtils.getCurrentDateTime()) + ".png";
+            String filePath = SystemHelpers.getCurrentDir() + "exports/screenshots/" + "screenshoot" + "_" + SystemHelpers.makeSlug(DateUtils.getCurrentDateTime()) + ".png";
 
             // Tạo đối tượng Path cho file đích
             Path targetPath = new File(filePath).toPath();
