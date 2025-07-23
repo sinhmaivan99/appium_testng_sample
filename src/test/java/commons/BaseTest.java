@@ -16,15 +16,20 @@ import io.appium.java_client.service.local.AppiumDriverLocalService;
 import io.appium.java_client.service.local.AppiumServiceBuilder;
 import io.appium.java_client.service.local.flags.GeneralServerFlag;
 import keywords.MobileUI;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Optional;
-import org.testng.annotations.Parameters;
+import listener.TestListener;
+import org.testng.annotations.*;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Duration;
 import java.util.Objects;
+
+/*
+ * Có 3 cách sử dụng testListener
+ * 1: Sử dụng trong class testcase: @Listeners(TestListener.class)
+ * 2: sử dụng trong class BaseTest để apply all class testcase: @Listeners({TestListener.class})
+ * 3: sử dụng trong file xml runner:
+ * */
 
 public class BaseTest {
 
