@@ -1,6 +1,10 @@
 package commons;
 
+import constants.ConfigData;
 import drivers.DriverManager;
+import helpers.CaptureHelpers;
+import helpers.DateUtils;
+import helpers.LogUtils;
 import helpers.SystemHelpers;
 import io.appium.java_client.AppiumBy;
 import io.appium.java_client.AppiumDriver;
@@ -28,6 +32,7 @@ public class BaseTest {
     private String HOST = "127.0.0.1";
     private String PORT = "4723";
     private int TIMEOUT_SERVICE = 60;
+    private String videoFileName;
 
     public void runAppiumServer(String host, String port) {
         System.out.println("host in AppiumServer: " + host);
@@ -122,6 +127,11 @@ public class BaseTest {
             // Lưu driver vào ThreadLocal
             DriverManager.setDriver(driver);
 
+            // Tạo tên file video duy nhất dựa trên device và thread
+            SystemHelpers.createFolder(SystemHelpers.getCurrentDir() + "exports/videos");
+            videoFileName = SystemHelpers.getCurrentDir() + "exports/videos/recording_" + deviceName + "_" + Thread.currentThread().getId() + "_" + SystemHelpers.makeSlug(DateUtils.getCurrentDateTime()) + ".mp4";
+            CaptureHelpers.startRecording();
+
         } catch (Exception e) {
             System.err.println("❌Lỗi nghiêm trọng khi khởi tạo driver cho thread " + Thread.currentThread().getId() + " trên device " + deviceName + ": " + e.getMessage());
             // Có thể ném lại lỗi để TestNG biết test setup thất bại
@@ -132,10 +142,19 @@ public class BaseTest {
     @AfterMethod(alwaysRun = true)
     public void tearDownDriver() {
         if (DriverManager.getDriver() != null) {
+
+            //Stop recording video
+            MobileUI.sleep(2);
+            CaptureHelpers.stopRecording(videoFileName);
+
             DriverManager.quitDriver();
-            System.out.println("##### Driver quit and removed.");
+            LogUtils.info("##### Driver quit and removed.");
         }
-        stopAppiumServer();
+
+        //Dừng Appium server LOCAL nếu đã khởi động
+        if (ConfigData.APPIUM_DRIVER_LOCAL_SERVICE.trim().equalsIgnoreCase("true")) {
+            stopAppiumServer();
+        }
     }
 
     //@AfterSuite
