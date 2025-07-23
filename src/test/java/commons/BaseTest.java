@@ -2,10 +2,7 @@ package commons;
 
 import constants.ConfigData;
 import drivers.DriverManager;
-import helpers.CaptureHelpers;
-import helpers.DateUtils;
-import helpers.LogUtils;
-import helpers.SystemHelpers;
+import helpers.*;
 import io.appium.java_client.AppiumBy;
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.android.AndroidDriver;
@@ -62,6 +59,12 @@ public class BaseTest {
         } else {
             System.out.println("Failed to start Appium server.");
         }
+    }
+
+    @BeforeSuite
+    public void DeleteFilesInMultipleFolders() {
+        // Xóa data folder screenshots và videos
+        DeleteFilesInMultipleFolders.deleteFilesInFolder();
     }
 
     @BeforeMethod(alwaysRun = true)

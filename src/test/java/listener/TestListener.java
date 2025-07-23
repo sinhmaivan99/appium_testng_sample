@@ -1,16 +1,11 @@
 package listener;
 
-import helpers.CaptureHelpers;
-import helpers.DateUtils;
-import helpers.LogUtils;
-import helpers.SystemHelpers;
+import helpers.*;
 import keywords.MobileUI;
 import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestResult;
 import reports.AllureManager;
-
-import java.io.File;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -18,27 +13,7 @@ public class TestListener implements ITestListener {
 
     @Override
     public void onStart(ITestContext result) {
-        String[] folders = { "exports/screenshots", "exports/videos" };
-
-        for (String folderPath : folders) {
-            File folder = new File(folderPath);
-
-            if (folder.exists() && folder.isDirectory()) {
-                File[] files = folder.listFiles();
-
-                if (files != null) {
-                    for (File file : files) {
-                        if (file.isFile()) {
-                            if (file.delete()) {
-                                System.out.println("Đã xóa: " + file.getAbsolutePath());
-                            } else {
-                                System.out.println("Thư mục trống: " + file.getAbsolutePath());
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        DeleteFilesInMultipleFolders.deleteFilesInFolder();
         LogUtils.info("♻\uFE0F Setup môi trường: " + result.getStartDate());
     }
 
