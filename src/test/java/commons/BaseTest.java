@@ -55,8 +55,8 @@ public class BaseTest {
     }
 
     @BeforeMethod(alwaysRun = true)
-    @Parameters({"platformName", "platformVersion", "deviceName", "udid", "automationName", "appPackage", "appActivity", "noReset", "host", "port", "bundleId", "wdaLocalPort", "systemPort"})
-    public void setUpDriver(@Optional String platformName, String platformVersion, String deviceName, @Optional String udid, @Optional String automationName, @Optional String appPackage, @Optional String appActivity, boolean noReset, String host, String port, @Optional String bundleId, @Optional String wdaLocalPort, @Optional String systemPort) throws MalformedURLException {
+    @Parameters({"platformName", "platformVersion", "deviceName", "udid", "automationName", "appPackage", "appActivity", "noReset", "host", "port", "systemPort"})
+    public void setUpDriver(@Optional String platformName, String platformVersion, String deviceName, @Optional String udid, @Optional String automationName, @Optional String appPackage, @Optional String appActivity, boolean noReset, String host, String port, @Optional String systemPort) throws MalformedURLException {
         runAppiumServer(host, port);
 
         System.out.println("platformName: " + platformName);
@@ -79,18 +79,23 @@ public class BaseTest {
                 options.setPlatformName(platformName);
                 options.setPlatformVersion(platformVersion);
                 options.setDeviceName(deviceName);
+
                 if (udid != null && !udid.isEmpty()) {
                     options.setUdid(udid);
                 }
+
                 if (appPackage != null && !appPackage.isEmpty()) {
                     options.setAppPackage(appPackage);
                 }
+
                 if (appActivity != null && !appActivity.isEmpty()) {
                     options.setAppActivity(appActivity);
                 }
+
                 // options.setApp("/path/to/your/app.apk");
                 options.setAutomationName(Objects.requireNonNullElse(automationName, "UiAutomator2"));
                 options.setNoReset(noReset);
+
                 if (systemPort != null && !systemPort.isEmpty()) {
                     options.setSystemPort(Integer.parseInt(systemPort));
                 }
@@ -98,23 +103,14 @@ public class BaseTest {
                 driver = new AndroidDriver(new URL("http://" + host + ":" + port), options);
                 System.out.println("Khởi tạo AndroidDriver cho thread: " + Thread.currentThread().getId() + " trên thiết bị: " + deviceName);
 
-
             } else if (platformName.equalsIgnoreCase("iOS")) {
                 XCUITestOptions options = new XCUITestOptions();
                 options.setPlatformName(platformName);
                 options.setPlatformVersion(platformVersion);
                 options.setDeviceName(deviceName);
-                // options.setApp("/path/to/your/app.app or .ipa");
-                if (bundleId != null && !bundleId.isEmpty()) {
-                    options.setBundleId(bundleId);
-                }
+
                 options.setAutomationName(Objects.requireNonNullElse(automationName, "XCUITest"));
                 options.setNoReset(false);
-                if (wdaLocalPort != null && !wdaLocalPort.isEmpty()) {
-                    options.setWdaLocalPort(Integer.parseInt(wdaLocalPort));
-                }
-                // options.setXcodeOrgId("YOUR_TEAM_ID");
-                // options.setXcodeSigningId("iPhone Developer");
 
                 driver = new IOSDriver(new URL("http://" + host + ":" + port), options);
                 System.out.println("Khởi tạo IOSDriver cho thread: " + Thread.currentThread().getId() + " trên thiết bị: " + deviceName);
@@ -131,7 +127,6 @@ public class BaseTest {
             // Có thể ném lại lỗi để TestNG biết test setup thất bại
             throw new RuntimeException("❌Không thể khởi tạo Appium driver ", e);
         }
-
     }
     
     @AfterMethod(alwaysRun = true)

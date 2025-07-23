@@ -1,5 +1,8 @@
 package helpers;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -9,13 +12,14 @@ import java.util.Properties;
 
 public class PropertiesHelpers {
 
+    private static final Logger log = LoggerFactory.getLogger(PropertiesHelpers.class);
     private static Properties properties;
     private static String linkFile;
     private static FileInputStream file;
     private static FileOutputStream out;
     private static String relPropertiesFilePathDefault = "src/test/resources/configs/config.properties";
 
-    public static Properties loadAllFiles() {
+    public static void loadAllFiles() {
         LinkedList<String> files = new LinkedList<>();
         // Add tất cả file Properties vào đây theo mẫu
         files.add("src/test/resources/configs/config.properties");
@@ -32,9 +36,8 @@ public class PropertiesHelpers {
                 tempProp.load(file);
                 properties.putAll(tempProp);
             }
-            return properties;
         } catch (IOException ioe) {
-            return new Properties();
+            new Properties();
         }
     }
 
@@ -46,7 +49,7 @@ public class PropertiesHelpers {
             properties.load(file);
             file.close();
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("e: ", e);
         }
     }
 
@@ -58,7 +61,7 @@ public class PropertiesHelpers {
             properties.load(file);
             file.close();
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("e: ", e);
         }
     }
 
@@ -140,7 +143,7 @@ public class PropertiesHelpers {
             properties.store(outputStream, null);
             outputStream.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("e: ", e);
         }
     }
 

@@ -58,7 +58,6 @@ public class DataProviderFactory {
         );
     }
 
-    
     // Truyền tham số từ suite XML vào DataProvider
 
     /**
@@ -118,5 +117,4 @@ public class DataProviderFactory {
                 rowIndices
         );
     }
-
 }

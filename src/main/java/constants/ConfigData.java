@@ -53,5 +53,4 @@ public class ConfigData {
         System.out.println("***" + propertyName + ": " + result);
         return result;
     }
-
 }

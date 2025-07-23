@@ -61,16 +61,6 @@ public class BasePage {
         menuWallet.click();
     }
 
-//    public ProfilePage clickMenuProfile() {
-//        menuProfile.click();
-//        return new ProfilePage();
-//    }
-//
-//    public ConfigPage clickMenuConfig() {
-//        menuConfig.click();
-//        return new ConfigPage();
-//    }
-
     public void clickOpenNavigationLeftMenu() {
         openNavigationLeftMenu.click();
     }
@@ -82,5 +72,4 @@ public class BasePage {
     public void clickButtonBack() {
         buttonBack.click();
     }
-
 }
