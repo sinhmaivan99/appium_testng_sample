@@ -10,6 +10,7 @@ import org.testng.ITestListener;
 import org.testng.ITestResult;
 import reports.AllureManager;
 
+import java.io.File;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -17,7 +18,27 @@ public class TestListener implements ITestListener {
 
     @Override
     public void onStart(ITestContext result) {
-        //Delete folder screenshots/videos
+        String[] folders = { "exports/screenshots", "exports/videos" };
+
+        for (String folderPath : folders) {
+            File folder = new File(folderPath);
+
+            if (folder.exists() && folder.isDirectory()) {
+                File[] files = folder.listFiles();
+
+                if (files != null) {
+                    for (File file : files) {
+                        if (file.isFile()) {
+                            if (file.delete()) {
+                                System.out.println("Đã xóa: " + file.getAbsolutePath());
+                            } else {
+                                System.out.println("Thư mục trống: " + file.getAbsolutePath());
+                            }
+                        }
+                    }
+                }
+            }
+        }
         LogUtils.info("♻\uFE0F Setup môi trường: " + result.getStartDate());
     }
 
