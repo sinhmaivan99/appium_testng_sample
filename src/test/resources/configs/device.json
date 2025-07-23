@@ -9,7 +9,7 @@
           "deviceName": "Pixel_8_Pro",
           "appPackage": "com.anhtester.mobile_app.taurus",
           "appActivity": "com.anhtester.mobile_app.taurus.MainActivity",
-          "appAndroidPath": "src/test/resources/apps/flutter-app-release.apk",
+          "appAndroidPath": "src/test/resources/apps/taurus_flutter_app_android_release.apk",
           "noReset": false,
           "fullReset": false,
           "autoGrantPermissions": true
@@ -21,7 +21,7 @@
           "deviceName": "Pixel_9_Pro_XL",
           "appPackage": "com.anhtester.mobile_app.taurus",
           "appActivity": "com.anhtester.mobile_app.taurus.MainActivity",
-          "appAndroidPath": "src/test/resources/apps/flutter-app-release.apk",
+          "appAndroidPath": "src/test/resources/apps/taurus_flutter_app_android_release.apk",
           "noReset": false,
           "fullReset": false,
           "autoGrantPermissions": true

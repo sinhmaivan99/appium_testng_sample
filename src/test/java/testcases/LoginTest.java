@@ -28,4 +28,8 @@ public class LoginTest extends BaseTest {
         loginPage.login("admin123", "admin");
         loginPage.verifyLoginFail();
     }
+    /*
+    * suite -> test -> class -> method -> tcs
+    * allure serve target/allure-results
+    * */
 }
