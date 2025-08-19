@@ -1,10 +1,12 @@
 package helpers;
 
+import constants.ConfigData;
+
 import java.io.File;
 
 public class DeleteFilesInMultipleFolders {
     public static void deleteFilesInFolder() {
-        String[] folders = { "exports/screenshots", "exports/videos" };
+        String[] folders = { ConfigData.SCREENSHOT_PATH, ConfigData.RECORD_VIDEO_PATH };
 
         for (String folderPath : folders) {
             File folder = new File(folderPath);

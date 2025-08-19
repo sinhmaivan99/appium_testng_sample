@@ -136,8 +136,8 @@ public class BaseTest {
             DriverManager.setDriver(driver);
 
             // Tạo tên file video duy nhất dựa trên device và thread
-            SystemHelpers.createFolder(SystemHelpers.getCurrentDir() + "exports/videos");
-            videoFileName = SystemHelpers.getCurrentDir() + "exports/videos/recording_" + deviceName + "_" + SystemHelpers.makeSlug(DateUtils.getCurrentDateTime()) + ".mp4";
+            SystemHelpers.createFolder(SystemHelpers.getCurrentDir() + ConfigData.RECORD_VIDEO_PATH);
+            videoFileName = SystemHelpers.getCurrentDir() + ConfigData.RECORD_VIDEO + "/recording_" + deviceName + "_" + SystemHelpers.makeSlug(DateUtils.getCurrentDateTime()) + ".mp4";
             CaptureHelpers.startRecording();
         } catch (Exception e) {
             System.err.println("❌Lỗi nghiêm trọng khi khởi tạo driver cho thread " + Thread.currentThread().getId() + " trên device " + deviceName + ": " + e.getMessage());

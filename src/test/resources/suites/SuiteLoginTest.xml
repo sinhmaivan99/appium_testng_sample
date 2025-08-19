@@ -3,7 +3,7 @@
 <suite name="Suite Regression Test" verbose="1">
 
 <!--    <listeners>-->
-<!--        <listener class-name="listener.TestListener"/>-->
+<!--        <listener class-name="listener.TestListener"/> allure serve target/allure-results -->
 <!--    </listeners>-->
 
     <parameter name="platformName" value="Android"/>

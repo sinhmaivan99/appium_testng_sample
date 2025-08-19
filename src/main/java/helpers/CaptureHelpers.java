@@ -1,5 +1,6 @@
 package helpers;
 
+import constants.ConfigData;
 import drivers.DriverManager;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.android.AndroidStartScreenRecordingOptions;
@@ -22,8 +23,8 @@ public class CaptureHelpers {
             // Ép kiểu driver thành TakesScreenshot để lấy ảnh màn hình
             File srcFile = ((TakesScreenshot) DriverManager.getDriver()).getScreenshotAs(OutputType.FILE);
 
-            SystemHelpers.createFolder(SystemHelpers.getCurrentDir() + "exports/screenshots");
-            String filePath = SystemHelpers.getCurrentDir() + "exports/screenshots/" + "screenshoot" + "_" + SystemHelpers.makeSlug(DateUtils.getCurrentDateTime()) + ".png";
+            SystemHelpers.createFolder(SystemHelpers.getCurrentDir() + ConfigData.SCREENSHOT_PATH);
+            String filePath = SystemHelpers.getCurrentDir() + ConfigData.SCREENSHOT_PATH + "/screenshoot" + "_" + SystemHelpers.makeSlug(DateUtils.getCurrentDateTime()) + ".png";
 
             // Tạo đối tượng Path cho file đích
             Path targetPath = new File(filePath).toPath();

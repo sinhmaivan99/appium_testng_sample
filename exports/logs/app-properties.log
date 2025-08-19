@@ -1319,3 +1319,109 @@
 [INFO] 23-07-2025 13:45:47 [main] LogUtils - [MobileUI] Element present and displayed check result: true
 [INFO] 23-07-2025 13:45:47 [main] LogUtils - [MobileUI] Sleeping for 2.0 seconds.
 [INFO] 23-07-2025 13:45:50 [main] LogUtils - ##### Driver quit and removed.
+[INFO] 19-08-2025 10:05:11 [main] LogUtils - [MobileUI] Sleeping for 1.0 seconds.
+[INFO] 19-08-2025 10:05:12 [main] LogUtils - [MobileUI] Clicking element: Located by By.chained({By.xpath: //android.view.View[@content-desc="Mobile App Flutter Beta"]/following-sibling::android.widget.EditText[1]}) within default timeout (10s).
+[INFO] 19-08-2025 10:05:12 [main] LogUtils - [MobileUI] Waiting up to 10s (default) for element to be clickable: Located by By.chained({By.xpath: //android.view.View[@content-desc="Mobile App Flutter Beta"]/following-sibling::android.widget.EditText[1]})
+[INFO] 19-08-2025 10:05:12 [main] LogUtils - [MobileUI] Sleeping for 1.0 seconds.
+[INFO] 19-08-2025 10:05:13 [main] LogUtils - [MobileUI] Setting text 'admin123' on element: Located by By.chained({By.xpath: //android.view.View[@content-desc="Mobile App Flutter Beta"]/following-sibling::android.widget.EditText[1]}) with default timeout.
+[INFO] 19-08-2025 10:05:13 [main] LogUtils - [MobileUI] Waiting up to 10s (default) for element to be visible: Located by By.chained({By.xpath: //android.view.View[@content-desc="Mobile App Flutter Beta"]/following-sibling::android.widget.EditText[1]})
+[INFO] 19-08-2025 10:05:15 [main] LogUtils - [MobileUI] Set text completed for element: Located by By.chained({By.xpath: //android.view.View[@content-desc="Mobile App Flutter Beta"]/following-sibling::android.widget.EditText[1]})
+[INFO] 19-08-2025 10:05:15 [main] LogUtils - [MobileUI] Sleeping for 1.0 seconds.
+[INFO] 19-08-2025 10:05:16 [main] LogUtils - [MobileUI] Clicking element: Located by By.chained({By.xpath: //android.view.View[@content-desc="Mobile App Flutter Beta"]/following-sibling::android.widget.EditText[2]}) within default timeout (10s).
+[INFO] 19-08-2025 10:05:16 [main] LogUtils - [MobileUI] Waiting up to 10s (default) for element to be clickable: Located by By.chained({By.xpath: //android.view.View[@content-desc="Mobile App Flutter Beta"]/following-sibling::android.widget.EditText[2]})
+[INFO] 19-08-2025 10:05:18 [main] LogUtils - [MobileUI] Sleeping for 1.0 seconds.
+[INFO] 19-08-2025 10:05:19 [main] LogUtils - [MobileUI] Setting text 'admin' on element: Located by By.chained({By.xpath: //android.view.View[@content-desc="Mobile App Flutter Beta"]/following-sibling::android.widget.EditText[2]}) with default timeout.
+[INFO] 19-08-2025 10:05:19 [main] LogUtils - [MobileUI] Waiting up to 10s (default) for element to be visible: Located by By.chained({By.xpath: //android.view.View[@content-desc="Mobile App Flutter Beta"]/following-sibling::android.widget.EditText[2]})
+[INFO] 19-08-2025 10:05:19 [main] LogUtils - [MobileUI] Set text completed for element: Located by By.chained({By.xpath: //android.view.View[@content-desc="Mobile App Flutter Beta"]/following-sibling::android.widget.EditText[2]})
+[INFO] 19-08-2025 10:05:19 [main] LogUtils - [MobileUI] Sleeping for 1.0 seconds.
+[INFO] 19-08-2025 10:05:20 [main] LogUtils - [MobileUI] Clicking element: Located by By.chained({By.xpath: //android.widget.Button[@content-desc="Sign in"]}) within default timeout (10s).
+[INFO] 19-08-2025 10:05:20 [main] LogUtils - [MobileUI] Waiting up to 10s (default) for element to be clickable: Located by By.chained({By.xpath: //android.widget.Button[@content-desc="Sign in"]})
+[INFO] 19-08-2025 10:05:21 [main] LogUtils - [MobileUI] Verifying element is present and displayed: Located by By.chained({AppiumBy.accessibilityId:  Invalid email or password}). Message if failed: The error message not display.
+[INFO] 19-08-2025 10:05:21 [main] LogUtils - [MobileUI] Checking if element is present and displayed: Located by By.chained({AppiumBy.accessibilityId:  Invalid email or password})
+[INFO] 19-08-2025 10:05:21 [main] LogUtils - [MobileUI] Element present and displayed check result: true
+[INFO] 19-08-2025 10:05:21 [main] LogUtils - [MobileUI] Sleeping for 1.0 seconds.
+[INFO] 19-08-2025 10:05:22 [main] LogUtils - [MobileUI] Getting attribute 'content-desc' from element: Located by By.chained({AppiumBy.accessibilityId:  Invalid email or password}) with default timeout.
+[INFO] 19-08-2025 10:05:22 [main] LogUtils - [MobileUI] Waiting up to 10s (default) for element to be visible: Located by By.chained({AppiumBy.accessibilityId:  Invalid email or password})
+[INFO] 19-08-2025 10:05:22 [main] LogUtils - [MobileUI] Retrieved attribute value: ' Invalid email or password'
+[INFO] 19-08-2025 10:05:22 [main] LogUtils - [MobileUI] Verifying attribute 'content-desc' of element: Located by By.chained({AppiumBy.accessibilityId:  Invalid email or password}) equals ' Invalid email or password'. Message if failed: The content of error message not display.
+[INFO] 19-08-2025 10:05:22 [main] LogUtils - [MobileUI] Sleeping for 1.0 seconds.
+[INFO] 19-08-2025 10:05:23 [main] LogUtils - [MobileUI] Getting attribute 'content-desc' from element: Located by By.chained({AppiumBy.accessibilityId:  Invalid email or password}) with default timeout.
+[INFO] 19-08-2025 10:05:23 [main] LogUtils - [MobileUI] Waiting up to 10s (default) for element to be visible: Located by By.chained({AppiumBy.accessibilityId:  Invalid email or password})
+[INFO] 19-08-2025 10:05:23 [main] LogUtils - [MobileUI] Retrieved attribute value: ' Invalid email or password'
+[INFO] 19-08-2025 10:05:24 [main] LogUtils - [MobileUI] Sleeping for 2.0 seconds.
+[INFO] 19-08-2025 10:05:27 [main] LogUtils - ##### Driver quit and removed.
+[INFO] 19-08-2025 10:05:32 [main] LogUtils - [MobileUI] Sleeping for 1.0 seconds.
+[INFO] 19-08-2025 10:05:33 [main] LogUtils - [MobileUI] Clicking element: Located by By.chained({By.xpath: //android.view.View[@content-desc="Mobile App Flutter Beta"]/following-sibling::android.widget.EditText[1]}) within default timeout (10s).
+[INFO] 19-08-2025 10:05:33 [main] LogUtils - [MobileUI] Waiting up to 10s (default) for element to be clickable: Located by By.chained({By.xpath: //android.view.View[@content-desc="Mobile App Flutter Beta"]/following-sibling::android.widget.EditText[1]})
+[INFO] 19-08-2025 10:05:34 [main] LogUtils - [MobileUI] Sleeping for 1.0 seconds.
+[INFO] 19-08-2025 10:05:35 [main] LogUtils - [MobileUI] Setting text 'admin' on element: Located by By.chained({By.xpath: //android.view.View[@content-desc="Mobile App Flutter Beta"]/following-sibling::android.widget.EditText[1]}) with default timeout.
+[INFO] 19-08-2025 10:05:35 [main] LogUtils - [MobileUI] Waiting up to 10s (default) for element to be visible: Located by By.chained({By.xpath: //android.view.View[@content-desc="Mobile App Flutter Beta"]/following-sibling::android.widget.EditText[1]})
+[INFO] 19-08-2025 10:05:36 [main] LogUtils - [MobileUI] Set text completed for element: Located by By.chained({By.xpath: //android.view.View[@content-desc="Mobile App Flutter Beta"]/following-sibling::android.widget.EditText[1]})
+[INFO] 19-08-2025 10:05:36 [main] LogUtils - [MobileUI] Sleeping for 1.0 seconds.
+[INFO] 19-08-2025 10:05:37 [main] LogUtils - [MobileUI] Clicking element: Located by By.chained({By.xpath: //android.view.View[@content-desc="Mobile App Flutter Beta"]/following-sibling::android.widget.EditText[2]}) within default timeout (10s).
+[INFO] 19-08-2025 10:05:37 [main] LogUtils - [MobileUI] Waiting up to 10s (default) for element to be clickable: Located by By.chained({By.xpath: //android.view.View[@content-desc="Mobile App Flutter Beta"]/following-sibling::android.widget.EditText[2]})
+[INFO] 19-08-2025 10:05:37 [main] LogUtils - [MobileUI] Sleeping for 1.0 seconds.
+[INFO] 19-08-2025 10:05:38 [main] LogUtils - [MobileUI] Setting text 'admin' on element: Located by By.chained({By.xpath: //android.view.View[@content-desc="Mobile App Flutter Beta"]/following-sibling::android.widget.EditText[2]}) with default timeout.
+[INFO] 19-08-2025 10:05:38 [main] LogUtils - [MobileUI] Waiting up to 10s (default) for element to be visible: Located by By.chained({By.xpath: //android.view.View[@content-desc="Mobile App Flutter Beta"]/following-sibling::android.widget.EditText[2]})
+[INFO] 19-08-2025 10:05:39 [main] LogUtils - [MobileUI] Set text completed for element: Located by By.chained({By.xpath: //android.view.View[@content-desc="Mobile App Flutter Beta"]/following-sibling::android.widget.EditText[2]})
+[INFO] 19-08-2025 10:05:39 [main] LogUtils - [MobileUI] Sleeping for 1.0 seconds.
+[INFO] 19-08-2025 10:05:40 [main] LogUtils - [MobileUI] Clicking element: Located by By.chained({By.xpath: //android.widget.Button[@content-desc="Sign in"]}) within default timeout (10s).
+[INFO] 19-08-2025 10:05:40 [main] LogUtils - [MobileUI] Waiting up to 10s (default) for element to be clickable: Located by By.chained({By.xpath: //android.widget.Button[@content-desc="Sign in"]})
+[INFO] 19-08-2025 10:05:41 [main] LogUtils - [MobileUI] Verifying element is present and displayed: Located by By.chained({AppiumBy.accessibilityId: Menu}). Message if failed: The Table page not display. (Menu not found)
+[INFO] 19-08-2025 10:05:41 [main] LogUtils - [MobileUI] Checking if element is present and displayed: Located by By.chained({AppiumBy.accessibilityId: Menu})
+[INFO] 19-08-2025 10:05:41 [main] LogUtils - [MobileUI] Element present and displayed check result: true
+[INFO] 19-08-2025 10:05:42 [main] LogUtils - [MobileUI] Sleeping for 2.0 seconds.
+[INFO] 19-08-2025 10:05:45 [main] LogUtils - ##### Driver quit and removed.
+[INFO] 19-08-2025 10:06:55 [main] LogUtils - [MobileUI] Sleeping for 1.0 seconds.
+[INFO] 19-08-2025 10:06:56 [main] LogUtils - [MobileUI] Clicking element: Located by By.chained({By.xpath: //android.view.View[@content-desc="Mobile App Flutter Beta"]/following-sibling::android.widget.EditText[1]}) within default timeout (10s).
+[INFO] 19-08-2025 10:06:56 [main] LogUtils - [MobileUI] Waiting up to 10s (default) for element to be clickable: Located by By.chained({By.xpath: //android.view.View[@content-desc="Mobile App Flutter Beta"]/following-sibling::android.widget.EditText[1]})
+[INFO] 19-08-2025 10:07:04 [main] LogUtils - [MobileUI] Sleeping for 1.0 seconds.
+[INFO] 19-08-2025 10:07:05 [main] LogUtils - [MobileUI] Setting text 'admin123' on element: Located by By.chained({By.xpath: //android.view.View[@content-desc="Mobile App Flutter Beta"]/following-sibling::android.widget.EditText[1]}) with default timeout.
+[INFO] 19-08-2025 10:07:05 [main] LogUtils - [MobileUI] Waiting up to 10s (default) for element to be visible: Located by By.chained({By.xpath: //android.view.View[@content-desc="Mobile App Flutter Beta"]/following-sibling::android.widget.EditText[1]})
+[INFO] 19-08-2025 10:07:06 [main] LogUtils - [MobileUI] Set text completed for element: Located by By.chained({By.xpath: //android.view.View[@content-desc="Mobile App Flutter Beta"]/following-sibling::android.widget.EditText[1]})
+[INFO] 19-08-2025 10:07:06 [main] LogUtils - [MobileUI] Sleeping for 1.0 seconds.
+[INFO] 19-08-2025 10:07:07 [main] LogUtils - [MobileUI] Clicking element: Located by By.chained({By.xpath: //android.view.View[@content-desc="Mobile App Flutter Beta"]/following-sibling::android.widget.EditText[2]}) within default timeout (10s).
+[INFO] 19-08-2025 10:07:07 [main] LogUtils - [MobileUI] Waiting up to 10s (default) for element to be clickable: Located by By.chained({By.xpath: //android.view.View[@content-desc="Mobile App Flutter Beta"]/following-sibling::android.widget.EditText[2]})
+[INFO] 19-08-2025 10:07:08 [main] LogUtils - [MobileUI] Sleeping for 1.0 seconds.
+[INFO] 19-08-2025 10:07:09 [main] LogUtils - [MobileUI] Setting text 'admin' on element: Located by By.chained({By.xpath: //android.view.View[@content-desc="Mobile App Flutter Beta"]/following-sibling::android.widget.EditText[2]}) with default timeout.
+[INFO] 19-08-2025 10:07:09 [main] LogUtils - [MobileUI] Waiting up to 10s (default) for element to be visible: Located by By.chained({By.xpath: //android.view.View[@content-desc="Mobile App Flutter Beta"]/following-sibling::android.widget.EditText[2]})
+[INFO] 19-08-2025 10:07:09 [main] LogUtils - [MobileUI] Set text completed for element: Located by By.chained({By.xpath: //android.view.View[@content-desc="Mobile App Flutter Beta"]/following-sibling::android.widget.EditText[2]})
+[INFO] 19-08-2025 10:07:09 [main] LogUtils - [MobileUI] Sleeping for 1.0 seconds.
+[INFO] 19-08-2025 10:07:10 [main] LogUtils - [MobileUI] Clicking element: Located by By.chained({By.xpath: //android.widget.Button[@content-desc="Sign in"]}) within default timeout (10s).
+[INFO] 19-08-2025 10:07:10 [main] LogUtils - [MobileUI] Waiting up to 10s (default) for element to be clickable: Located by By.chained({By.xpath: //android.widget.Button[@content-desc="Sign in"]})
+[INFO] 19-08-2025 10:07:11 [main] LogUtils - [MobileUI] Verifying element is present and displayed: Located by By.chained({AppiumBy.accessibilityId:  Invalid email or password}). Message if failed: The error message not display.
+[INFO] 19-08-2025 10:07:11 [main] LogUtils - [MobileUI] Checking if element is present and displayed: Located by By.chained({AppiumBy.accessibilityId:  Invalid email or password})
+[INFO] 19-08-2025 10:07:11 [main] LogUtils - [MobileUI] Element present and displayed check result: true
+[INFO] 19-08-2025 10:07:11 [main] LogUtils - [MobileUI] Sleeping for 1.0 seconds.
+[INFO] 19-08-2025 10:07:12 [main] LogUtils - [MobileUI] Getting attribute 'content-desc' from element: Located by By.chained({AppiumBy.accessibilityId:  Invalid email or password}) with default timeout.
+[INFO] 19-08-2025 10:07:12 [main] LogUtils - [MobileUI] Waiting up to 10s (default) for element to be visible: Located by By.chained({AppiumBy.accessibilityId:  Invalid email or password})
+[INFO] 19-08-2025 10:07:12 [main] LogUtils - [MobileUI] Retrieved attribute value: ' Invalid email or password'
+[INFO] 19-08-2025 10:07:12 [main] LogUtils - [MobileUI] Verifying attribute 'content-desc' of element: Located by By.chained({AppiumBy.accessibilityId:  Invalid email or password}) equals ' Invalid email or password'. Message if failed: The content of error message not display.
+[INFO] 19-08-2025 10:07:12 [main] LogUtils - [MobileUI] Sleeping for 1.0 seconds.
+[INFO] 19-08-2025 10:07:13 [main] LogUtils - [MobileUI] Getting attribute 'content-desc' from element: Located by By.chained({AppiumBy.accessibilityId:  Invalid email or password}) with default timeout.
+[INFO] 19-08-2025 10:07:13 [main] LogUtils - [MobileUI] Waiting up to 10s (default) for element to be visible: Located by By.chained({AppiumBy.accessibilityId:  Invalid email or password})
+[INFO] 19-08-2025 10:07:13 [main] LogUtils - [MobileUI] Retrieved attribute value: ' Invalid email or password'
+[INFO] 19-08-2025 10:07:14 [main] LogUtils - [MobileUI] Sleeping for 2.0 seconds.
+[INFO] 19-08-2025 10:07:17 [main] LogUtils - ##### Driver quit and removed.
+[INFO] 19-08-2025 10:07:22 [main] LogUtils - [MobileUI] Sleeping for 1.0 seconds.
+[INFO] 19-08-2025 10:07:23 [main] LogUtils - [MobileUI] Clicking element: Located by By.chained({By.xpath: //android.view.View[@content-desc="Mobile App Flutter Beta"]/following-sibling::android.widget.EditText[1]}) within default timeout (10s).
+[INFO] 19-08-2025 10:07:23 [main] LogUtils - [MobileUI] Waiting up to 10s (default) for element to be clickable: Located by By.chained({By.xpath: //android.view.View[@content-desc="Mobile App Flutter Beta"]/following-sibling::android.widget.EditText[1]})
+[INFO] 19-08-2025 10:07:24 [main] LogUtils - [MobileUI] Sleeping for 1.0 seconds.
+[INFO] 19-08-2025 10:07:25 [main] LogUtils - [MobileUI] Setting text 'admin' on element: Located by By.chained({By.xpath: //android.view.View[@content-desc="Mobile App Flutter Beta"]/following-sibling::android.widget.EditText[1]}) with default timeout.
+[INFO] 19-08-2025 10:07:25 [main] LogUtils - [MobileUI] Waiting up to 10s (default) for element to be visible: Located by By.chained({By.xpath: //android.view.View[@content-desc="Mobile App Flutter Beta"]/following-sibling::android.widget.EditText[1]})
+[INFO] 19-08-2025 10:07:26 [main] LogUtils - [MobileUI] Set text completed for element: Located by By.chained({By.xpath: //android.view.View[@content-desc="Mobile App Flutter Beta"]/following-sibling::android.widget.EditText[1]})
+[INFO] 19-08-2025 10:07:26 [main] LogUtils - [MobileUI] Sleeping for 1.0 seconds.
+[INFO] 19-08-2025 10:07:27 [main] LogUtils - [MobileUI] Clicking element: Located by By.chained({By.xpath: //android.view.View[@content-desc="Mobile App Flutter Beta"]/following-sibling::android.widget.EditText[2]}) within default timeout (10s).
+[INFO] 19-08-2025 10:07:27 [main] LogUtils - [MobileUI] Waiting up to 10s (default) for element to be clickable: Located by By.chained({By.xpath: //android.view.View[@content-desc="Mobile App Flutter Beta"]/following-sibling::android.widget.EditText[2]})
+[INFO] 19-08-2025 10:07:27 [main] LogUtils - [MobileUI] Sleeping for 1.0 seconds.
+[INFO] 19-08-2025 10:07:28 [main] LogUtils - [MobileUI] Setting text 'admin' on element: Located by By.chained({By.xpath: //android.view.View[@content-desc="Mobile App Flutter Beta"]/following-sibling::android.widget.EditText[2]}) with default timeout.
+[INFO] 19-08-2025 10:07:28 [main] LogUtils - [MobileUI] Waiting up to 10s (default) for element to be visible: Located by By.chained({By.xpath: //android.view.View[@content-desc="Mobile App Flutter Beta"]/following-sibling::android.widget.EditText[2]})
+[INFO] 19-08-2025 10:07:29 [main] LogUtils - [MobileUI] Set text completed for element: Located by By.chained({By.xpath: //android.view.View[@content-desc="Mobile App Flutter Beta"]/following-sibling::android.widget.EditText[2]})
+[INFO] 19-08-2025 10:07:29 [main] LogUtils - [MobileUI] Sleeping for 1.0 seconds.
+[INFO] 19-08-2025 10:07:30 [main] LogUtils - [MobileUI] Clicking element: Located by By.chained({By.xpath: //android.widget.Button[@content-desc="Sign in"]}) within default timeout (10s).
+[INFO] 19-08-2025 10:07:30 [main] LogUtils - [MobileUI] Waiting up to 10s (default) for element to be clickable: Located by By.chained({By.xpath: //android.widget.Button[@content-desc="Sign in"]})
+[INFO] 19-08-2025 10:07:31 [main] LogUtils - [MobileUI] Verifying element is present and displayed: Located by By.chained({AppiumBy.accessibilityId: Menu}). Message if failed: The Table page not display. (Menu not found)
+[INFO] 19-08-2025 10:07:31 [main] LogUtils - [MobileUI] Checking if element is present and displayed: Located by By.chained({AppiumBy.accessibilityId: Menu})
+[INFO] 19-08-2025 10:07:31 [main] LogUtils - [MobileUI] Element present and displayed check result: true
+[INFO] 19-08-2025 10:07:31 [main] LogUtils - [MobileUI] Sleeping for 2.0 seconds.
+[INFO] 19-08-2025 10:07:34 [main] LogUtils - ##### Driver quit and removed.
