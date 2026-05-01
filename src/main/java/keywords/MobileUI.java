@@ -34,12 +34,14 @@ public class MobileUI {
 
     public static void swipe(int startX, int startY, int endX, int endY, int durationMillis) {
         sleep(STEP_ACTION_TIMEOUT);
-        LogUtils.info("[MobileUI] Executing swipe from (" + startX + "," + startY + ") to (" + endX + "," + endY + ") with duration " + durationMillis + "ms.");
+        LogUtils.info("[MobileUI] Executing swipe from (" + startX + "," + startY + ") to (" + endX + "," + endY
+                + ") with duration " + durationMillis + "ms.");
         PointerInput finger = new PointerInput(PointerInput.Kind.TOUCH, "finger");
         Sequence swipe = new Sequence(finger, 1);
         swipe.addAction(finger.createPointerMove(Duration.ofMillis(0), PointerInput.Origin.viewport(), startX, startY));
         swipe.addAction(finger.createPointerDown(0));
-        swipe.addAction(finger.createPointerMove(Duration.ofMillis(durationMillis), PointerInput.Origin.viewport(), endX, endY));
+        swipe.addAction(finger.createPointerMove(Duration.ofMillis(durationMillis), PointerInput.Origin.viewport(),
+                endX, endY));
         swipe.addAction(finger.createPointerUp(0));
         getDriver().perform(Collections.singletonList(swipe));
     }
@@ -69,7 +71,8 @@ public class MobileUI {
     }
 
     private static Point getCenterOfElement(Point location, Dimension size) {
-        // No log needed for private helper, logging happens in the calling public method
+        // No log needed for private helper, logging happens in the calling public
+        // method
         return new Point(location.getX() + size.getWidth() / 2, location.getY() + size.getHeight() / 2);
     }
 
@@ -80,7 +83,10 @@ public class MobileUI {
         Dimension size = element.getSize();
         Point centerOfElement = getCenterOfElement(location, size);
         PointerInput finger = new PointerInput(PointerInput.Kind.TOUCH, "finger");
-        Sequence sequence = new Sequence(finger, 1).addAction(finger.createPointerMove(Duration.ZERO, PointerInput.Origin.viewport(), centerOfElement)).addAction(finger.createPointerDown(PointerInput.MouseButton.LEFT.asArg())).addAction(new Pause(finger, Duration.ofMillis(500))) // Note: Default pause is 500ms here
+        Sequence sequence = new Sequence(finger, 1)
+                .addAction(finger.createPointerMove(Duration.ZERO, PointerInput.Origin.viewport(), centerOfElement))
+                .addAction(finger.createPointerDown(PointerInput.MouseButton.LEFT.asArg()))
+                .addAction(new Pause(finger, Duration.ofMillis(500))) // Note: Default pause is 500ms here
                 .addAction(finger.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
 
         getDriver().perform(Collections.singletonList(sequence));
@@ -93,26 +99,28 @@ public class MobileUI {
         Sequence tap = new Sequence(finger, 1);
         tap.addAction(finger.createPointerMove(Duration.ZERO, PointerInput.Origin.viewport(), x, y));
         tap.addAction(finger.createPointerDown(PointerInput.MouseButton.LEFT.asArg()));
-        tap.addAction(new Pause(finger, Duration.ofMillis(200))); //Chạm nhẹ nhanh
+        tap.addAction(new Pause(finger, Duration.ofMillis(200))); // Chạm nhẹ nhanh
         tap.addAction(finger.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
         getDriver().perform(List.of(tap));
     }
 
     public static void tap(int x, int y, int milliSecondDuration) {
         sleep(STEP_ACTION_TIMEOUT);
-        LogUtils.info("[MobileUI] Executing tap at coordinates (" + x + "," + y + ") with pause " + milliSecondDuration + "ms.");
+        LogUtils.info("[MobileUI] Executing tap at coordinates (" + x + "," + y + ") with pause " + milliSecondDuration
+                + "ms.");
         PointerInput finger = new PointerInput(PointerInput.Kind.TOUCH, "finger");
         Sequence tap = new Sequence(finger, 1);
         tap.addAction(finger.createPointerMove(Duration.ZERO, PointerInput.Origin.viewport(), x, y));
         tap.addAction(finger.createPointerDown(PointerInput.MouseButton.LEFT.asArg()));
-        tap.addAction(new Pause(finger, Duration.ofMillis(milliSecondDuration))); //Chạm vào với thời gian chỉ định
+        tap.addAction(new Pause(finger, Duration.ofMillis(milliSecondDuration))); // Chạm vào với thời gian chỉ định
         tap.addAction(finger.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
         getDriver().perform(List.of(tap));
     }
 
     public static void zoom(WebElement element, double scale) {
         sleep(STEP_ACTION_TIMEOUT);
-        LogUtils.info("[MobileUI] Executing zoom on element: " + element + " with approximate scale factor: " + scale + " (Note: Implementation may need review for accurate scaling)");
+        LogUtils.info("[MobileUI] Executing zoom on element: " + element + " with approximate scale factor: " + scale
+                + " (Note: Implementation may need review for accurate scaling)");
         int centerX = element.getLocation().getX() + element.getSize().getWidth() / 2;
         int centerY = element.getLocation().getY() + element.getSize().getHeight() / 2;
         int distance = 100; // Khoảng cách giữa hai ngón tay
@@ -121,14 +129,17 @@ public class MobileUI {
         PointerInput finger2 = new PointerInput(PointerInput.Kind.TOUCH, "finger2");
 
         Sequence zoom = new Sequence(finger1, 1);
-        zoom.addAction(finger1.createPointerMove(Duration.ofMillis(0), PointerInput.Origin.viewport(), centerX - distance, centerY));
+        zoom.addAction(finger1.createPointerMove(Duration.ofMillis(0), PointerInput.Origin.viewport(),
+                centerX - distance, centerY));
         zoom.addAction(finger1.createPointerDown(0));
 
         Sequence zoom2 = new Sequence(finger2, 1);
-        zoom2.addAction(finger2.createPointerMove(Duration.ofMillis(0), PointerInput.Origin.viewport(), centerX + distance, centerY));
+        zoom2.addAction(finger2.createPointerMove(Duration.ofMillis(0), PointerInput.Origin.viewport(),
+                centerX + distance, centerY));
         zoom2.addAction(finger2.createPointerDown(0));
 
-        // Simplified movement - Actual scaling might need more complex radial movement logic
+        // Simplified movement - Actual scaling might need more complex radial movement
+        // logic
         int moveDuration = 50;
         int steps = 10;
         int startDist1X = centerX - distance;
@@ -148,8 +159,10 @@ public class MobileUI {
         for (int i = 1; i <= steps; i++) {
             int currentX1 = startDist1X + (endDist1X - startDist1X) * i / steps;
             int currentX2 = startDist2X + (endDist2X - startDist2X) * i / steps;
-            zoom.addAction(finger1.createPointerMove(Duration.ofMillis(moveDuration), PointerInput.Origin.viewport(), currentX1, centerY));
-            zoom2.addAction(finger2.createPointerMove(Duration.ofMillis(moveDuration), PointerInput.Origin.viewport(), currentX2, centerY));
+            zoom.addAction(finger1.createPointerMove(Duration.ofMillis(moveDuration), PointerInput.Origin.viewport(),
+                    currentX1, centerY));
+            zoom2.addAction(finger2.createPointerMove(Duration.ofMillis(moveDuration), PointerInput.Origin.viewport(),
+                    currentX2, centerY));
         }
 
         zoom.addAction(finger1.createPointerUp(0));
@@ -160,12 +173,14 @@ public class MobileUI {
 
     public static void scroll(int startX, int startY, int endX, int endY, int durationMillis) {
         sleep(STEP_ACTION_TIMEOUT);
-        LogUtils.info("[MobileUI] Executing scroll from (" + startX + "," + startY + ") to (" + endX + "," + endY + ") with duration " + durationMillis + "ms.");
+        LogUtils.info("[MobileUI] Executing scroll from (" + startX + "," + startY + ") to (" + endX + "," + endY
+                + ") with duration " + durationMillis + "ms.");
         PointerInput finger = new PointerInput(PointerInput.Kind.TOUCH, "finger");
         Sequence swipe = new Sequence(finger, 1);
         swipe.addAction(finger.createPointerMove(Duration.ofMillis(0), PointerInput.Origin.viewport(), startX, startY));
         swipe.addAction(finger.createPointerDown(0));
-        swipe.addAction(finger.createPointerMove(Duration.ofMillis(durationMillis), PointerInput.Origin.viewport(), endX, endY));
+        swipe.addAction(finger.createPointerMove(Duration.ofMillis(durationMillis), PointerInput.Origin.viewport(),
+                endX, endY));
         swipe.addAction(finger.createPointerUp(0));
         getDriver().perform(Collections.singletonList(swipe));
     }
@@ -196,7 +211,8 @@ public class MobileUI {
     @Step("Click element {0}")
     public static void clickElement(By locator) {
         sleep(STEP_ACTION_TIMEOUT);
-        LogUtils.info("[MobileUI] Clicking element located by: " + locator + " within default timeout (" + DEFAULT_TIMEOUT + "s).");
+        LogUtils.info("[MobileUI] Clicking element located by: " + locator + " within default timeout ("
+                + DEFAULT_TIMEOUT + "s).");
         waitForElementToBeClickable(locator).click();
     }
 
@@ -210,14 +226,16 @@ public class MobileUI {
     @Step("Click element {0}")
     public static void clickElement(WebElement element) {
         sleep(STEP_ACTION_TIMEOUT);
-        LogUtils.info("[MobileUI] Clicking element: " + element + " within default timeout (" + DEFAULT_TIMEOUT + "s).");
+        LogUtils.info(
+                "[MobileUI] Clicking element: " + element + " within default timeout (" + DEFAULT_TIMEOUT + "s).");
         waitForElementToBeClickable(element).click();
     }
 
     @Step("Set text '{1}' on element {0}")
     public static void setText(By locator, String text) {
         sleep(STEP_ACTION_TIMEOUT);
-        LogUtils.info("[MobileUI] Setting text '" + text + "' on element located by: " + locator + " with default timeout.");
+        LogUtils.info(
+                "[MobileUI] Setting text '" + text + "' on element located by: " + locator + " with default timeout.");
         WebElement element = waitForElementVisible(locator);
         element.click(); // Often needed before clear/sendKeys
         element.clear();
@@ -228,7 +246,8 @@ public class MobileUI {
     @Step("Set text '{1}' on element {0} within {2}s")
     public static void setText(By locator, String text, int second) {
         sleep(STEP_ACTION_TIMEOUT);
-        LogUtils.info("[MobileUI] Setting text '" + text + "' on element located by: " + locator + " with timeout " + second + "s.");
+        LogUtils.info("[MobileUI] Setting text '" + text + "' on element located by: " + locator + " with timeout "
+                + second + "s.");
         WebElement element = waitForElementVisible(locator, second);
         element.click();
         element.clear();
@@ -251,7 +270,8 @@ public class MobileUI {
     @Step("Set text '{1}' on element {0} within {2}s")
     public static void setText(WebElement element, String text, int second) {
         sleep(STEP_ACTION_TIMEOUT);
-        LogUtils.info("[MobileUI] Setting text '" + text + "' on element: " + element + " with timeout " + second + "s.");
+        LogUtils.info(
+                "[MobileUI] Setting text '" + text + "' on element: " + element + " with timeout " + second + "s.");
         WebElement elm = waitForElementVisible(element, second);
         elm.click();
         elm.clear();
@@ -341,7 +361,8 @@ public class MobileUI {
 
     public static String getElementAttribute(By locator, String attribute) {
         sleep(STEP_ACTION_TIMEOUT);
-        LogUtils.info("[MobileUI] Getting attribute '" + attribute + "' from element located by: " + locator + " with default timeout.");
+        LogUtils.info("[MobileUI] Getting attribute '" + attribute + "' from element located by: " + locator
+                + " with default timeout.");
         WebElement element = waitForElementVisible(locator);
         String value = element.getAttribute(attribute);
         LogUtils.info("[MobileUI] Retrieved attribute value: '" + value + "'");
@@ -350,7 +371,8 @@ public class MobileUI {
 
     public static String getElementAttribute(By locator, String attribute, int second) {
         sleep(STEP_ACTION_TIMEOUT);
-        LogUtils.info("[MobileUI] Getting attribute '" + attribute + "' from element located by: " + locator + " with timeout " + second + "s.");
+        LogUtils.info("[MobileUI] Getting attribute '" + attribute + "' from element located by: " + locator
+                + " with timeout " + second + "s.");
         WebElement element = waitForElementVisible(locator, second);
         String value = element.getAttribute(attribute);
         LogUtils.info("[MobileUI] Retrieved attribute value: '" + value + "'");
@@ -359,7 +381,8 @@ public class MobileUI {
 
     public static String getElementAttribute(WebElement element, String attribute) {
         sleep(STEP_ACTION_TIMEOUT);
-        LogUtils.info("[MobileUI] Getting attribute '" + attribute + "' from element: " + element + " with default timeout.");
+        LogUtils.info(
+                "[MobileUI] Getting attribute '" + attribute + "' from element: " + element + " with default timeout.");
         WebElement elm = waitForElementVisible(element);
         String value = elm.getAttribute(attribute);
         LogUtils.info("[MobileUI] Retrieved attribute value: '" + value + "'");
@@ -368,7 +391,8 @@ public class MobileUI {
 
     public static String getElementAttribute(WebElement element, String attribute, int second) {
         sleep(STEP_ACTION_TIMEOUT);
-        LogUtils.info("[MobileUI] Getting attribute '" + attribute + "' from element: " + element + " with timeout " + second + "s.");
+        LogUtils.info("[MobileUI] Getting attribute '" + attribute + "' from element: " + element + " with timeout "
+                + second + "s.");
         WebElement elm = waitForElementVisible(element, second);
         String value = elm.getAttribute(attribute);
         LogUtils.info("[MobileUI] Retrieved attribute value: '" + value + "'");
@@ -383,10 +407,12 @@ public class MobileUI {
             LogUtils.info("[MobileUI] Element present and displayed check result: " + result);
             return result;
         } catch (NoSuchElementException e) {
-            LogUtils.info("[MobileUI] Element not found during presence/display check: " + element + " - " + e.getMessage());
+            LogUtils.info(
+                    "[MobileUI] Element not found during presence/display check: " + element + " - " + e.getMessage());
             return false;
         } catch (Exception e) {
-            LogUtils.info("[MobileUI] An error occurred checking presence/display for element: " + element + " - " + e.getMessage());
+            LogUtils.info("[MobileUI] An error occurred checking presence/display for element: " + element + " - "
+                    + e.getMessage());
             return false;
         }
     }
@@ -397,13 +423,16 @@ public class MobileUI {
         try {
             WebElement element = getDriver().findElement(locator); // Find first, then check display
             result = element.isDisplayed();
-            LogUtils.info("[MobileUI] Element present and displayed check result: " + result + " for locator: " + locator);
+            LogUtils.info(
+                    "[MobileUI] Element present and displayed check result: " + result + " for locator: " + locator);
             return result;
         } catch (NoSuchElementException e) {
-            LogUtils.info("[MobileUI] Element not found during presence/display check: " + locator + " - " + e.getMessage());
+            LogUtils.info(
+                    "[MobileUI] Element not found during presence/display check: " + locator + " - " + e.getMessage());
             return false;
         } catch (Exception e) {
-            LogUtils.info("[MobileUI] An error occurred checking presence/display for locator: " + locator + " - " + e.getMessage());
+            LogUtils.info("[MobileUI] An error occurred checking presence/display for locator: " + locator + " - "
+                    + e.getMessage());
             return false;
         }
     }
@@ -416,7 +445,8 @@ public class MobileUI {
             LogUtils.info("[MobileUI] Element enabled check result: " + result);
             return result;
         } catch (Exception e) {
-            LogUtils.info("[MobileUI] An error occurred checking enabled status for element: " + element + " - " + e.getMessage());
+            LogUtils.info("[MobileUI] An error occurred checking enabled status for element: " + element + " - "
+                    + e.getMessage());
             return false;
         }
     }
@@ -430,7 +460,8 @@ public class MobileUI {
             LogUtils.info("[MobileUI] Element enabled check result: " + result + " for locator: " + locator);
             return result;
         } catch (Exception e) {
-            LogUtils.info("[MobileUI] An error occurred checking enabled status for locator: " + locator + " - " + e.getMessage());
+            LogUtils.info("[MobileUI] An error occurred checking enabled status for locator: " + locator + " - "
+                    + e.getMessage());
             return false;
         }
     }
@@ -443,7 +474,8 @@ public class MobileUI {
             LogUtils.info("[MobileUI] Element selected check result: " + result);
             return result;
         } catch (Exception e) {
-            LogUtils.info("[MobileUI] An error occurred checking selected status for element: " + element + " - " + e.getMessage());
+            LogUtils.info("[MobileUI] An error occurred checking selected status for element: " + element + " - "
+                    + e.getMessage());
             return false;
         }
     }
@@ -457,21 +489,23 @@ public class MobileUI {
             LogUtils.info("[MobileUI] Element selected check result: " + result + " for locator: " + locator);
             return result;
         } catch (Exception e) {
-            LogUtils.info("[MobileUI] An error occurred checking selected status for locator: " + locator + " - " + e.getMessage());
+            LogUtils.info("[MobileUI] An error occurred checking selected status for locator: " + locator + " - "
+                    + e.getMessage());
             return false;
         }
     }
 
-
     // Các hàm verify (sử dụng Assert và gọi lại các hàm is)
 
     public static void verifyElementPresentAndDisplayed(WebElement element, String message) {
-        LogUtils.info("[MobileUI] Verifying element is present and displayed: " + element + ". Message if failed: " + message);
+        LogUtils.info("[MobileUI] Verifying element is present and displayed: " + element + ". Message if failed: "
+                + message);
         Assert.assertTrue(isElementPresentAndDisplayed(element), message);
     }
 
     public static void verifyElementPresentAndDisplayed(By locator, String message) {
-        LogUtils.info("[MobileUI] Verifying element is present and displayed: " + locator + ". Message if failed: " + message);
+        LogUtils.info("[MobileUI] Verifying element is present and displayed: " + locator + ". Message if failed: "
+                + message);
         Assert.assertTrue(isElementPresentAndDisplayed(locator), message);
     }
 
@@ -496,22 +530,27 @@ public class MobileUI {
     }
 
     public static void verifyElementText(WebElement element, String expectedText, String message) {
-        LogUtils.info("[MobileUI] Verifying text of element: " + element + " equals '" + expectedText + "'. Message if failed: " + message);
+        LogUtils.info("[MobileUI] Verifying text of element: " + element + " equals '" + expectedText
+                + "'. Message if failed: " + message);
         Assert.assertEquals(getElementText(element), expectedText, message);
     }
 
     public static void verifyElementText(By locator, String expectedText, String message) {
-        LogUtils.info("[MobileUI] Verifying text of element: " + locator + " equals '" + expectedText + "'. Message if failed: " + message);
+        LogUtils.info("[MobileUI] Verifying text of element: " + locator + " equals '" + expectedText
+                + "'. Message if failed: " + message);
         Assert.assertEquals(getElementText(locator), expectedText, message);
     }
 
-    public static void verifyElementAttribute(WebElement element, String attribute, String expectedValue, String message) {
-        LogUtils.info("[MobileUI] Verifying attribute '" + attribute + "' of element: " + element + " equals '" + expectedValue + "'. Message if failed: " + message);
+    public static void verifyElementAttribute(WebElement element, String attribute, String expectedValue,
+            String message) {
+        LogUtils.info("[MobileUI] Verifying attribute '" + attribute + "' of element: " + element + " equals '"
+                + expectedValue + "'. Message if failed: " + message);
         Assert.assertEquals(getElementAttribute(element, attribute), expectedValue, message);
     }
 
     public static void verifyElementAttribute(By locator, String attribute, String expectedValue, String message) {
-        LogUtils.info("[MobileUI] Verifying attribute '" + attribute + "' of element: " + locator + " equals '" + expectedValue + "'. Message if failed: " + message);
+        LogUtils.info("[MobileUI] Verifying attribute '" + attribute + "' of element: " + locator + " equals '"
+                + expectedValue + "'. Message if failed: " + message);
         Assert.assertEquals(getElementAttribute(locator, attribute), expectedValue, message);
     }
 
@@ -520,7 +559,6 @@ public class MobileUI {
         Assert.assertTrue(condition, message);
         LogUtils.info("[MobileUI] Assertion passed for condition: " + condition);
     }
-
 
     // --- Wait Methods ---
 
@@ -531,7 +569,8 @@ public class MobileUI {
     }
 
     public static WebElement waitForElementToBeClickable(By locator) {
-        LogUtils.info("[MobileUI] Waiting up to " + DEFAULT_TIMEOUT + "s (default) for element to be clickable: " + locator);
+        LogUtils.info(
+                "[MobileUI] Waiting up to " + DEFAULT_TIMEOUT + "s (default) for element to be clickable: " + locator);
         WebDriverWait wait = new WebDriverWait(getDriver(), Duration.ofSeconds(DEFAULT_TIMEOUT));
         return wait.until(ExpectedConditions.elementToBeClickable(locator));
     }
@@ -543,7 +582,8 @@ public class MobileUI {
     }
 
     public static WebElement waitForElementToBeClickable(WebElement element) {
-        LogUtils.info("[MobileUI] Waiting up to " + DEFAULT_TIMEOUT + "s (default) for element to be clickable: " + element);
+        LogUtils.info(
+                "[MobileUI] Waiting up to " + DEFAULT_TIMEOUT + "s (default) for element to be clickable: " + element);
         WebDriverWait wait = new WebDriverWait(getDriver(), Duration.ofSeconds(DEFAULT_TIMEOUT));
         return wait.until(ExpectedConditions.elementToBeClickable(element));
     }
@@ -555,7 +595,8 @@ public class MobileUI {
     }
 
     public static WebElement waitForElementVisible(By locator) {
-        LogUtils.info("[MobileUI] Waiting up to " + DEFAULT_TIMEOUT + "s (default) for element to be visible: " + locator);
+        LogUtils.info(
+                "[MobileUI] Waiting up to " + DEFAULT_TIMEOUT + "s (default) for element to be visible: " + locator);
         WebDriverWait wait = new WebDriverWait(getDriver(), Duration.ofSeconds(DEFAULT_TIMEOUT));
         return wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
     }
@@ -567,7 +608,8 @@ public class MobileUI {
     }
 
     public static WebElement waitForElementVisible(WebElement element) {
-        LogUtils.info("[MobileUI] Waiting up to " + DEFAULT_TIMEOUT + "s (default) for element to be visible: " + element);
+        LogUtils.info(
+                "[MobileUI] Waiting up to " + DEFAULT_TIMEOUT + "s (default) for element to be visible: " + element);
         WebDriverWait wait = new WebDriverWait(getDriver(), Duration.ofSeconds(DEFAULT_TIMEOUT));
         return wait.until(ExpectedConditions.visibilityOf(element));
     }
@@ -579,7 +621,8 @@ public class MobileUI {
     }
 
     public static boolean waitForElementInvisible(By locator) {
-        LogUtils.info("[MobileUI] Waiting up to " + DEFAULT_TIMEOUT + "s (default) for element to be invisible: " + locator);
+        LogUtils.info(
+                "[MobileUI] Waiting up to " + DEFAULT_TIMEOUT + "s (default) for element to be invisible: " + locator);
         WebDriverWait wait = new WebDriverWait(getDriver(), Duration.ofSeconds(DEFAULT_TIMEOUT));
         return wait.until(ExpectedConditions.invisibilityOfElementLocated(locator));
     }
@@ -591,7 +634,8 @@ public class MobileUI {
     }
 
     public static boolean waitForElementInvisible(WebElement element) {
-        LogUtils.info("[MobileUI] Waiting up to " + DEFAULT_TIMEOUT + "s (default) for element to be invisible: " + element);
+        LogUtils.info(
+                "[MobileUI] Waiting up to " + DEFAULT_TIMEOUT + "s (default) for element to be invisible: " + element);
         WebDriverWait wait = new WebDriverWait(getDriver(), Duration.ofSeconds(DEFAULT_TIMEOUT));
         return wait.until(ExpectedConditions.invisibilityOf(element));
     }
@@ -603,67 +647,78 @@ public class MobileUI {
     }
 
     public static WebElement waitForElementPresent(By locator) {
-        LogUtils.info("[MobileUI] Waiting up to " + DEFAULT_TIMEOUT + "s (default) for element to be present in DOM: " + locator);
+        LogUtils.info("[MobileUI] Waiting up to " + DEFAULT_TIMEOUT + "s (default) for element to be present in DOM: "
+                + locator);
         WebDriverWait wait = new WebDriverWait(getDriver(), Duration.ofSeconds(DEFAULT_TIMEOUT));
         return wait.until(ExpectedConditions.presenceOfElementLocated(locator));
     }
 
     public static boolean waitForTextToBePresent(By locator, String text, int timeout) {
-        LogUtils.info("[MobileUI] Waiting up to " + timeout + "s for text '" + text + "' to be present in element: " + locator);
+        LogUtils.info("[MobileUI] Waiting up to " + timeout + "s for text '" + text + "' to be present in element: "
+                + locator);
         WebDriverWait wait = new WebDriverWait(getDriver(), Duration.ofSeconds(timeout));
         return wait.until(ExpectedConditions.textToBePresentInElementLocated(locator, text));
     }
 
     public static boolean waitForTextToBePresent(By locator, String text) {
-        LogUtils.info("[MobileUI] Waiting up to " + DEFAULT_TIMEOUT + "s (default) for text '" + text + "' to be present in element: " + locator);
+        LogUtils.info("[MobileUI] Waiting up to " + DEFAULT_TIMEOUT + "s (default) for text '" + text
+                + "' to be present in element: " + locator);
         WebDriverWait wait = new WebDriverWait(getDriver(), Duration.ofSeconds(DEFAULT_TIMEOUT));
         return wait.until(ExpectedConditions.textToBePresentInElementLocated(locator, text));
     }
 
     public static boolean waitForTextToBePresent(WebElement element, String text, int timeout) {
-        LogUtils.info("[MobileUI] Waiting up to " + timeout + "s for text '" + text + "' to be present in element: " + element);
+        LogUtils.info("[MobileUI] Waiting up to " + timeout + "s for text '" + text + "' to be present in element: "
+                + element);
         WebDriverWait wait = new WebDriverWait(getDriver(), Duration.ofSeconds(timeout));
         return wait.until(ExpectedConditions.textToBePresentInElement(element, text));
     }
 
     public static boolean waitForTextToBePresent(WebElement element, String text) {
-        LogUtils.info("[MobileUI] Waiting up to " + DEFAULT_TIMEOUT + "s (default) for text '" + text + "' to be present in element: " + element);
+        LogUtils.info("[MobileUI] Waiting up to " + DEFAULT_TIMEOUT + "s (default) for text '" + text
+                + "' to be present in element: " + element);
         WebDriverWait wait = new WebDriverWait(getDriver(), Duration.ofSeconds(DEFAULT_TIMEOUT));
         return wait.until(ExpectedConditions.textToBePresentInElement(element, text));
     }
 
     public static boolean waitForAttributeToBe(By locator, String attribute, String value, int timeout) {
-        LogUtils.info("[MobileUI] Waiting up to " + timeout + "s for attribute '" + attribute + "' to be '" + value + "' in element: " + locator);
+        LogUtils.info("[MobileUI] Waiting up to " + timeout + "s for attribute '" + attribute + "' to be '" + value
+                + "' in element: " + locator);
         WebDriverWait wait = new WebDriverWait(getDriver(), Duration.ofSeconds(timeout));
         return wait.until(ExpectedConditions.attributeToBe(locator, attribute, value));
     }
 
     public static boolean waitForAttributeToBe(By locator, String attribute, String value) {
-        LogUtils.info("[MobileUI] Waiting up to " + DEFAULT_TIMEOUT + "s (default) for attribute '" + attribute + "' to be '" + value + "' in element: " + locator);
+        LogUtils.info("[MobileUI] Waiting up to " + DEFAULT_TIMEOUT + "s (default) for attribute '" + attribute
+                + "' to be '" + value + "' in element: " + locator);
         WebDriverWait wait = new WebDriverWait(getDriver(), Duration.ofSeconds(DEFAULT_TIMEOUT));
         return wait.until(ExpectedConditions.attributeToBe(locator, attribute, value));
     }
 
     public static boolean waitForAttributeToBe(WebElement element, String attribute, String value, int timeout) {
-        LogUtils.info("[MobileUI] Waiting up to " + timeout + "s for attribute '" + attribute + "' to be '" + value + "' in element: " + element);
+        LogUtils.info("[MobileUI] Waiting up to " + timeout + "s for attribute '" + attribute + "' to be '" + value
+                + "' in element: " + element);
         WebDriverWait wait = new WebDriverWait(getDriver(), Duration.ofSeconds(timeout));
         return wait.until(ExpectedConditions.attributeToBe(element, attribute, value));
     }
 
     public static boolean waitForAttributeToBe(WebElement element, String attribute, String value) {
-        LogUtils.info("[MobileUI] Waiting up to " + DEFAULT_TIMEOUT + "s (default) for attribute '" + attribute + "' to be '" + value + "' in element: " + element);
+        LogUtils.info("[MobileUI] Waiting up to " + DEFAULT_TIMEOUT + "s (default) for attribute '" + attribute
+                + "' to be '" + value + "' in element: " + element);
         WebDriverWait wait = new WebDriverWait(getDriver(), Duration.ofSeconds(DEFAULT_TIMEOUT));
         return wait.until(ExpectedConditions.attributeToBe(element, attribute, value));
     }
 
     public static List<WebElement> waitForNumberOfElements(By locator, int expectedCount, int timeout) {
-        LogUtils.info("[MobileUI] Waiting up to " + timeout + "s for number of elements to be " + expectedCount + " for locator: " + locator);
+        LogUtils.info("[MobileUI] Waiting up to " + timeout + "s for number of elements to be " + expectedCount
+                + " for locator: " + locator);
         WebDriverWait wait = new WebDriverWait(getDriver(), Duration.ofSeconds(timeout));
         return wait.until(ExpectedConditions.numberOfElementsToBe(locator, expectedCount));
     }
 
     public static List<WebElement> waitForNumberOfElements(By locator, int expectedCount) {
-        LogUtils.info("[MobileUI] Waiting up to " + DEFAULT_TIMEOUT + "s (default) for number of elements to be " + expectedCount + " for locator: " + locator);
+        LogUtils.info("[MobileUI] Waiting up to " + DEFAULT_TIMEOUT + "s (default) for number of elements to be "
+                + expectedCount + " for locator: " + locator);
         WebDriverWait wait = new WebDriverWait(getDriver(), Duration.ofSeconds(DEFAULT_TIMEOUT));
         return wait.until(ExpectedConditions.numberOfElementsToBe(locator, expectedCount));
     }
@@ -687,7 +742,8 @@ public class MobileUI {
     }
 
     public static boolean waitForNumberOfWindows(int expectedWindows) {
-        LogUtils.info("[MobileUI] Waiting up to " + DEFAULT_TIMEOUT + "s (default) for number of windows to be: " + expectedWindows);
+        LogUtils.info("[MobileUI] Waiting up to " + DEFAULT_TIMEOUT + "s (default) for number of windows to be: "
+                + expectedWindows);
         WebDriverWait wait = new WebDriverWait(getDriver(), Duration.ofSeconds(DEFAULT_TIMEOUT));
         return wait.until(ExpectedConditions.numberOfWindowsToBe(expectedWindows));
     }

@@ -121,16 +121,16 @@ public class JsonHelpers {
             reader = Files.newBufferedReader(Paths.get(ConfigData.JSON_DATA_FILE_PATH));
 
             Gson gson = new Gson();
-            //Convert Json file to Json Object
+            // Convert Json file to Json Object
             JsonObject jsonObject = gson.fromJson(reader, JsonObject.class);
             System.out.println("Original JSON: " + jsonObject);
 
-            //Update value if exist key
+            // Update value if exist key
             jsonObject.addProperty(keyName, value);
 
             System.out.println("Modified JSON: " + jsonObject);
 
-            //Store new Json data to file
+            // Store new Json data to file
             File jsonFile = new File(ConfigData.JSON_DATA_FILE_PATH);
             OutputStream outputStream = new FileOutputStream(jsonFile);
             outputStream.write(gson.toJson(jsonObject).getBytes());
@@ -148,7 +148,7 @@ public class JsonHelpers {
             reader = Files.newBufferedReader(Paths.get(ConfigData.JSON_DATA_FILE_PATH));
 
             Gson gson = new Gson();
-            //Convert Json file to Json Object
+            // Convert Json file to Json Object
             JsonObject jsonObject = gson.fromJson(reader, JsonObject.class);
             System.out.println("Original JSON: " + jsonObject);
 
@@ -158,12 +158,12 @@ public class JsonHelpers {
                 System.out.println("➕ Add new key: '" + keyName + "'");
             }
 
-            //Update value if exist key
+            // Update value if exist key
             jsonObject.addProperty(keyName, value);
 
             System.out.println("Modified JSON: " + jsonObject);
 
-            //Store new Json data to file
+            // Store new Json data to file
             File jsonFile = new File(ConfigData.JSON_DATA_FILE_PATH);
             OutputStream outputStream = new FileOutputStream(jsonFile);
             outputStream.write(gson.toJson(jsonObject).getBytes());
@@ -181,7 +181,7 @@ public class JsonHelpers {
             reader = Files.newBufferedReader(Paths.get(ConfigData.JSON_DATA_FILE_PATH));
 
             Gson gson = new Gson();
-            //Convert Json file to Json Object
+            // Convert Json file to Json Object
             JsonObject jsonObject = gson.fromJson(reader, JsonObject.class);
             System.out.println("Original JSON: " + jsonObject);
 
@@ -190,12 +190,12 @@ public class JsonHelpers {
                 jsonObject.add(parentKey, new JsonObject());
             }
 
-            //Update value if exist key
+            // Update value if exist key
             jsonObject.getAsJsonObject(parentKey).addProperty(keyName, value);
 
             System.out.println("Modified JSON: " + jsonObject);
 
-            //Store new Json data to file
+            // Store new Json data to file
             File jsonFile = new File(ConfigData.JSON_DATA_FILE_PATH);
             OutputStream outputStream = new FileOutputStream(jsonFile);
             outputStream.write(gson.toJson(jsonObject).getBytes());
@@ -212,7 +212,7 @@ public class JsonHelpers {
             reader = Files.newBufferedReader(Paths.get(ConfigData.JSON_DATA_FILE_PATH));
 
             Gson gson = new Gson();
-            //Convert Json file to Json Object
+            // Convert Json file to Json Object
             JsonObject jsonObject = gson.fromJson(reader, JsonObject.class);
             System.out.println("Original JSON: " + jsonObject);
 
@@ -226,7 +226,7 @@ public class JsonHelpers {
 
             System.out.println("Modified JSON: " + jsonObject);
 
-            //Store new Json data to file
+            // Store new Json data to file
             File jsonFile = new File(ConfigData.JSON_DATA_FILE_PATH);
             OutputStream outputStream = new FileOutputStream(jsonFile);
             outputStream.write(gson.toJson(jsonObject).getBytes());
@@ -243,7 +243,7 @@ public class JsonHelpers {
             reader = Files.newBufferedReader(Paths.get(filePath));
 
             Gson gson = new Gson();
-            //Convert Json file to Json Object
+            // Convert Json file to Json Object
             JsonObject jsonObject = gson.fromJson(reader, JsonObject.class);
             System.out.println("Original JSON: " + jsonObject);
 
@@ -252,18 +252,18 @@ public class JsonHelpers {
                 jsonObject.add(keyName, new JsonObject());
             }
 
-            //Update value if exist key
+            // Update value if exist key
             jsonObject.addProperty(keyName, value);
 
             System.out.println("Modified JSON: " + jsonObject);
 
-            //Store new Json data to new file
+            // Store new Json data to new file
             File jsonFile = new File(filePath);
             OutputStream outputStream = new FileOutputStream(jsonFile);
             outputStream.write(gson.toJson(jsonObject).getBytes());
             outputStream.flush();
 
-            //Close reader
+            // Close reader
             reader.close();
 
         } catch (IOException e) {
@@ -277,7 +277,7 @@ public class JsonHelpers {
             reader = Files.newBufferedReader(Paths.get(filePath));
 
             Gson gson = new Gson();
-            //Convert Json file to Json Object
+            // Convert Json file to Json Object
             JsonObject jsonObject = gson.fromJson(reader, JsonObject.class);
             System.out.println("Original JSON: " + jsonObject);
 
@@ -286,18 +286,18 @@ public class JsonHelpers {
                 jsonObject.add(keyName, new JsonObject());
             }
 
-            //Update value if exist key
+            // Update value if exist key
             jsonObject.addProperty(keyName, value);
 
             System.out.println("Modified JSON: " + jsonObject);
 
-            //Store new Json data to new file
+            // Store new Json data to new file
             File jsonFile = new File(filePath);
             OutputStream outputStream = new FileOutputStream(jsonFile);
             outputStream.write(gson.toJson(jsonObject).getBytes());
             outputStream.flush();
 
-            //Close reader
+            // Close reader
             reader.close();
 
         } catch (IOException e) {
@@ -311,7 +311,7 @@ public class JsonHelpers {
             reader = Files.newBufferedReader(Paths.get(filePath));
 
             Gson gson = new Gson();
-            //Convert Json file to Json Object
+            // Convert Json file to Json Object
             JsonObject jsonObject = gson.fromJson(reader, JsonObject.class);
             System.out.println("Original JSON: " + jsonObject);
 
@@ -320,12 +320,12 @@ public class JsonHelpers {
                 jsonObject.add(parentKey, new JsonObject());
             }
 
-            //Update value if exist key
+            // Update value if exist key
             jsonObject.getAsJsonObject(parentKey).addProperty(keyName, value);
 
             System.out.println("Modified JSON: " + jsonObject);
 
-            //Store new Json data to file
+            // Store new Json data to file
             File jsonFile = new File(filePath);
             OutputStream outputStream = new FileOutputStream(jsonFile);
             outputStream.write(gson.toJson(jsonObject).getBytes());
@@ -342,7 +342,7 @@ public class JsonHelpers {
             reader = Files.newBufferedReader(Paths.get(filePath));
 
             Gson gson = new Gson();
-            //Convert Json file to Json Object
+            // Convert Json file to Json Object
             JsonObject jsonObject = gson.fromJson(reader, JsonObject.class);
             System.out.println("Original JSON: " + jsonObject);
 
@@ -351,12 +351,12 @@ public class JsonHelpers {
                 jsonObject.add(parentKey, new JsonObject());
             }
 
-            //Update value if exist key
+            // Update value if exist key
             jsonObject.getAsJsonObject(parentKey).addProperty(keyName, value);
 
             System.out.println("Modified JSON: " + jsonObject);
 
-            //Store new Json data to file
+            // Store new Json data to file
             File jsonFile = new File(filePath);
             OutputStream outputStream = new FileOutputStream(jsonFile);
             outputStream.write(gson.toJson(jsonObject).getBytes());

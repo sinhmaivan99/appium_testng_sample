@@ -29,9 +29,11 @@ public class TestListener implements ITestListener {
 
         // Tạo tên file video duy nhất dựa trên device và thread
         SystemHelpers.createFolder(SystemHelpers.getCurrentDir() + ConfigData.RECORD_VIDEO_PATH);
-        String videoFileName = SystemHelpers.getCurrentDir() + ConfigData.RECORD_VIDEO_PATH + "/recording_" + "_" + Thread.currentThread().getId() + "_" + SystemHelpers.makeSlug(DateUtils.getCurrentDateTime()) + ".mp4";
+        String videoFileName = SystemHelpers.getCurrentDir() + ConfigData.RECORD_VIDEO_PATH + "/recording_" + "_"
+                + Thread.currentThread().getId() + "_" + SystemHelpers.makeSlug(DateUtils.getCurrentDateTime())
+                + ".mp4";
 
-        if(ConfigData.RECORD_VIDEO.equalsIgnoreCase("true")) {
+        if (ConfigData.RECORD_VIDEO.equalsIgnoreCase("true")) {
             CaptureHelpers.startRecording();
         }
     }
@@ -50,7 +52,9 @@ public class TestListener implements ITestListener {
         }
 
         SystemHelpers.createFolder(SystemHelpers.getCurrentDir() + ConfigData.RECORD_VIDEO_PATH);
-        String videoFileName = SystemHelpers.getCurrentDir() + ConfigData.RECORD_VIDEO_PATH + "/recording_" + result.getName() + "_" + Thread.currentThread().getId() + "_" + SystemHelpers.makeSlug(DateUtils.getCurrentDateTime()) + ".mp4";
+        String videoFileName = SystemHelpers.getCurrentDir() + ConfigData.RECORD_VIDEO_PATH + "/recording_"
+                + result.getName() + "_" + Thread.currentThread().getId() + "_"
+                + SystemHelpers.makeSlug(DateUtils.getCurrentDateTime()) + ".mp4";
         MobileUI.sleep(5);
 
         if (ConfigData.RECORD_VIDEO.equalsIgnoreCase("true")) {
@@ -74,21 +78,23 @@ public class TestListener implements ITestListener {
         CaptureHelpers.captureScreenshot();
 
         SystemHelpers.createFolder(SystemHelpers.getCurrentDir() + ConfigData.RECORD_VIDEO_PATH);
-        String videoFileName = SystemHelpers.getCurrentDir() + ConfigData.RECORD_VIDEO_PATH + "/recording_" + result.getName() + "_" + Thread.currentThread().getId() + "_" + SystemHelpers.makeSlug(DateUtils.getCurrentDateTime()) + ".mp4";
+        String videoFileName = SystemHelpers.getCurrentDir() + ConfigData.RECORD_VIDEO_PATH + "/recording_"
+                + result.getName() + "_" + Thread.currentThread().getId() + "_"
+                + SystemHelpers.makeSlug(DateUtils.getCurrentDateTime()) + ".mp4";
 
         if (ConfigData.RECORD_VIDEO.equalsIgnoreCase("true")) {
             MobileUI.sleep(2);
             CaptureHelpers.stopRecording(videoFileName);
         }
 
-        //Add screenshot to Allure report
+        // Add screenshot to Allure report
         AllureManager.saveTextLog(result.getName() + " is failed.");
         AllureManager.saveScreenshotPNG();
 
-        //Connect Jira
-        //Create new issue on Jira
-        //Ghi logs vào file
-        //Xuất report html nhìn trực quan và đẹp mắt
+        // Connect Jira
+        // Create new issue on Jira
+        // Ghi logs vào file
+        // Xuất report html nhìn trực quan và đẹp mắt
     }
 
     @Override
@@ -96,7 +102,9 @@ public class TestListener implements ITestListener {
         LogUtils.info("⛔\uFE0F Test case " + result.getName() + " is skipped.");
 
         SystemHelpers.createFolder(SystemHelpers.getCurrentDir() + ConfigData.RECORD_VIDEO_PATH);
-        String videoFileName = SystemHelpers.getCurrentDir() + ConfigData.RECORD_VIDEO_PATH + "/recording_" + result.getName() + "_" + Thread.currentThread().getId() + "_" + SystemHelpers.makeSlug(DateUtils.getCurrentDateTime()) + ".mp4";
+        String videoFileName = SystemHelpers.getCurrentDir() + ConfigData.RECORD_VIDEO_PATH + "/recording_"
+                + result.getName() + "_" + Thread.currentThread().getId() + "_"
+                + SystemHelpers.makeSlug(DateUtils.getCurrentDateTime()) + ".mp4";
         MobileUI.sleep(2);
         CaptureHelpers.stopRecording(videoFileName);
     }

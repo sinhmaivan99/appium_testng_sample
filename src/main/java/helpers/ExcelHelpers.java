@@ -24,7 +24,7 @@ public class ExcelHelpers {
     public ExcelHelpers() {
     }
 
-    //Set Excel File
+    // Set Excel File
     public void setExcelFile(String excelPath, String sheetName) {
         System.out.println("Set Excel File: " + excelPath);
         System.out.println("Sheet Name: " + sheetName);
@@ -52,9 +52,9 @@ public class ExcelHelpers {
             fis = new FileInputStream(excelPath);
             workbook = WorkbookFactory.create(fis);
             sheet = workbook.getSheet(sheetName);
-            //sh = wb.getSheetAt(0); //0 - index of 1st sheet
+            // sh = wb.getSheetAt(0); //0 - index of 1st sheet
             if (sheet == null) {
-                //sh = wb.createSheet(sheetName);
+                // sh = wb.createSheet(sheetName);
                 try {
                     System.out.println("Sheet name not found.");
                     throw new RuntimeException("Sheet name not found.");
@@ -65,7 +65,7 @@ public class ExcelHelpers {
 
             excelFilePath = excelPath;
 
-            //adding all the column header names to the map 'columns'
+            // adding all the column header names to the map 'columns'
             sheet.getRow(0).forEach(cell -> {
                 columns.put(cell.getStringCellValue(), cell.getColumnIndex());
             });
@@ -76,13 +76,14 @@ public class ExcelHelpers {
         }
     }
 
-    //This method takes the row number as a parameter and returns the data for that row.
+    // This method takes the row number as a parameter and returns the data for that
+    // row.
     public Row getRowData(int rowNum) {
         row = sheet.getRow(rowNum);
         return row;
     }
 
-    //Get Excel data from the sheet
+    // Get Excel data from the sheet
     public Object[][] getExcelData(String excelPath, String sheetName) {
         Object[][] data = null;
         Workbook workbook = null;
@@ -129,13 +130,14 @@ public class ExcelHelpers {
             Cell cell;
             data = new Object[noOfRows - 1][noOfCols];
 
-            //FOR loop runs from 1 to drop header line (headline is 0)
+            // FOR loop runs from 1 to drop header line (headline is 0)
             for (int i = 1; i < noOfRows; i++) {
                 for (int j = 0; j < noOfCols; j++) {
                     row = sheet.getRow(i);
                     cell = row.getCell(j);
 
-                    //This is used to determine the data type from cells in Excel and then convert it to String for ease of reading
+                    // This is used to determine the data type from cells in Excel and then convert
+                    // it to String for ease of reading
                     switch (cell.getCellType()) {
                         case STRING:
                             data[i - 1][j] = cell.getStringCellValue();

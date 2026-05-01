@@ -68,8 +68,12 @@ public class BaseTest {
     }
 
     @BeforeMethod(alwaysRun = true)
-    @Parameters({"platformName", "platformVersion", "deviceName", "udid", "automationName", "appPackage", "appActivity", "noReset", "host", "port", "systemPort"})
-    public void setUpDriver(@Optional String platformName, String platformVersion, String deviceName, @Optional String udid, @Optional String automationName, @Optional String appPackage, @Optional String appActivity, boolean noReset, String host, String port, @Optional String systemPort) throws MalformedURLException {
+    @Parameters({ "platformName", "platformVersion", "deviceName", "udid", "automationName", "appPackage",
+            "appActivity", "noReset", "host", "port", "systemPort" })
+    public void setUpDriver(@Optional String platformName, String platformVersion, String deviceName,
+            @Optional String udid, @Optional String automationName, @Optional String appPackage,
+            @Optional String appActivity, boolean noReset, String host, String port, @Optional String systemPort)
+            throws MalformedURLException {
         runAppiumServer(host, port);
 
         System.out.println("platformName: " + platformName);
@@ -114,7 +118,8 @@ public class BaseTest {
                 }
 
                 driver = new AndroidDriver(new URL("http://" + host + ":" + port), options);
-                System.out.println("Khởi tạo AndroidDriver cho thread: " + Thread.currentThread().getId() + " trên thiết bị: " + deviceName);
+                System.out.println("Khởi tạo AndroidDriver cho thread: " + Thread.currentThread().getId()
+                        + " trên thiết bị: " + deviceName);
 
             } else if (platformName.equalsIgnoreCase("iOS")) {
                 XCUITestOptions options = new XCUITestOptions();
@@ -126,7 +131,8 @@ public class BaseTest {
                 options.setNoReset(false);
 
                 driver = new IOSDriver(new URL("http://" + host + ":" + port), options);
-                System.out.println("Khởi tạo IOSDriver cho thread: " + Thread.currentThread().getId() + " trên thiết bị: " + deviceName);
+                System.out.println("Khởi tạo IOSDriver cho thread: " + Thread.currentThread().getId()
+                        + " trên thiết bị: " + deviceName);
 
             } else {
                 throw new IllegalArgumentException("Platform không hợp lệ: " + platformName);
@@ -137,22 +143,24 @@ public class BaseTest {
 
             // Tạo tên file video duy nhất dựa trên device và thread
             SystemHelpers.createFolder(SystemHelpers.getCurrentDir() + ConfigData.RECORD_VIDEO_PATH);
-            videoFileName = SystemHelpers.getCurrentDir() + ConfigData.RECORD_VIDEO + "/recording_" + deviceName + "_" + SystemHelpers.makeSlug(DateUtils.getCurrentDateTime()) + ".mp4";
+            videoFileName = SystemHelpers.getCurrentDir() + ConfigData.RECORD_VIDEO + "/recording_" + deviceName + "_"
+                    + SystemHelpers.makeSlug(DateUtils.getCurrentDateTime()) + ".mp4";
             CaptureHelpers.startRecording();
         } catch (Exception e) {
-            System.err.println("❌Lỗi nghiêm trọng khi khởi tạo driver cho thread " + Thread.currentThread().getId() + " trên device " + deviceName + ": " + e.getMessage());
+            System.err.println("❌Lỗi nghiêm trọng khi khởi tạo driver cho thread " + Thread.currentThread().getId()
+                    + " trên device " + deviceName + ": " + e.getMessage());
             // Có thể ném lại lỗi để TestNG biết test setup thất bại
             throw new RuntimeException("❌Không thể khởi tạo Appium driver ", e);
         }
     }
-    
+
     @AfterMethod(alwaysRun = true)
     public void tearDownDriver() {
         if (DriverManager.getDriver() != null) {
-            //Capture screen
+            // Capture screen
             CaptureHelpers.captureScreenshot();
 
-            //Stop recording video
+            // Stop recording video
             MobileUI.sleep(2);
             CaptureHelpers.stopRecording(videoFileName);
 
@@ -160,32 +168,36 @@ public class BaseTest {
             LogUtils.info("##### Driver quit and removed.");
         }
 
-        //Dừng Appium server LOCAL nếu đã khởi động
+        // Dừng Appium server LOCAL nếu đã khởi động
         if (ConfigData.APPIUM_DRIVER_LOCAL_SERVICE.trim().equalsIgnoreCase("true")) {
             stopAppiumServer();
         }
     }
 
-    //@AfterSuite
+    // @AfterSuite
     public void stopAppiumServer() {
         if (service != null && service.isRunning()) {
             service.stop();
             System.out.println("##### Appium server stopped on " + HOST + ":" + PORT);
         }
-        //Kill process on port
+        // Kill process on port
         SystemHelpers.killProcessOnPort(PORT);
     }
 
     public void downloadDataFromServer(int dataNumber) {
-        //Navigate to config to download database demo
+        // Navigate to config to download database demo
         DriverManager.getDriver().findElement(AppiumBy.accessibilityId("Config")).click();
         DriverManager.getDriver().findElement(AppiumBy.accessibilityId("Server database")).click();
         MobileUI.sleep(2);
-        DriverManager.getDriver().findElement(AppiumBy.xpath("//android.view.View[contains(@content-desc,'Data " + dataNumber + "')]/android.widget.Button")).click();
+        DriverManager.getDriver()
+                .findElement(AppiumBy.xpath(
+                        "//android.view.View[contains(@content-desc,'Data " + dataNumber + "')]/android.widget.Button"))
+                .click();
         DriverManager.getDriver().findElement(AppiumBy.accessibilityId("Replace")).click();
         MobileUI.sleep(1);
 
-        //Handle Alert Message, check displayed hoặc getText/getAttribute để kiểm tra nội dung message
+        // Handle Alert Message, check displayed hoặc getText/getAttribute để kiểm tra
+        // nội dung message
         if (DriverManager.getDriver().findElement(AppiumBy.accessibilityId("Downloaded")).isDisplayed()) {
             System.out.println("Database demo downloaded.");
         } else {
