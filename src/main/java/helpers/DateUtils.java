@@ -1,34 +1,49 @@
 package helpers;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
-//final -> We do not want any class to extend this class
+/**
+ * Thread-safe date/time utility methods.
+ */
 public final class DateUtils {
 
+    private static final DateTimeFormatter DATE_TIME_FORMATTER =
+            DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+
+    private static final DateTimeFormatter DATE_FORMATTER =
+            DateTimeFormatter.ofPattern("EEE MMM dd HH:mm:ss zzz yyyy",
+                    java.util.Locale.ENGLISH);
+
+    private DateUtils() {
+        // Utility class — prevent instantiation
+    }
+
     /**
-     * @return lấy ra ngày tháng năm hiện tại của máy theo cấu trúc mặc định
+     * Returns current date/time as a filesystem-safe string.
      */
     public static String getCurrentDate() {
-        Date date = new Date();
-        return date.toString().replace(":", "_").replace(" ", "_");
+        return LocalDateTime.now().toString()
+                .replace(":", "_")
+                .replace(" ", "_");
     }
 
     /**
-     * @return lấy ra ngày tháng năm và giờ phút giây hiện tại của máy theo cấu trúc dd/MM/yyyy HH:mm:ss
+     * Returns current date and time formatted as {@code dd/MM/yyyy HH:mm:ss}.
      */
     public static String getCurrentDateTime() {
-        Date now = new Date();
-        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-        return formatter.format(now);
+        return LocalDateTime.now().format(DATE_TIME_FORMATTER);
     }
 
-    public static String getCurrentDateTimeCustom(String separator_Character) {
-        Date now = new Date();
-        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-        String timeStamp = formatter.format(now).replace("/", separator_Character);
-        timeStamp = timeStamp.replace(" ", separator_Character);
-        timeStamp = timeStamp.replace(":", separator_Character);
-        return timeStamp;
+    /**
+     * Returns current date and time with all separators replaced by the given character.
+     *
+     * @param separatorChar the character to use as a separator
+     */
+    public static String getCurrentDateTimeCustom(String separatorChar) {
+        return getCurrentDateTime()
+                .replace("/", separatorChar)
+                .replace(" ", separatorChar)
+                .replace(":", separatorChar);
     }
 }

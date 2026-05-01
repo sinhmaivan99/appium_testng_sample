@@ -3,450 +3,238 @@ package helpers;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import constants.ConfigData;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
-public class JsonHelpers {
+/**
+ * Utility for reading and writing JSON data files.
+ * <p>
+ * Provides methods for both JSON Object and JSON Array structures.
+ * Uses Jackson for reads and Gson for writes (consistent with original).
+ * </p>
+ */
+public final class JsonHelpers {
 
-    // Get value from JSON file with multiple keys
+    private static final ObjectMapper MAPPER = new ObjectMapper();
+    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+
+    private JsonHelpers() {
+        // Utility class — prevent instantiation
+    }
+
+    // ═══════════════════════ READ HELPERS ═══════════════════════
+
+    /**
+     * Reads a nested value from the default JSON data file using dot-separated keys.
+     *
+     * @param keys path to the target node, e.g. "user", "name"
+     * @return the text value at that path, or empty string if not found
+     */
     public static String getValueJsonObject(String... keys) {
-        String value = null;
-        ObjectMapper objectMapper = new ObjectMapper();
+        return getValueJsonObjectFromFile(ConfigData.JSON_DATA_FILE_PATH, keys);
+    }
 
+    /**
+     * Reads a nested value from a specific JSON file using dot-separated keys.
+     */
+    public static String getValueJsonObjectFromFile(String filePath, String... keys) {
         try {
-            JsonNode node = objectMapper.readTree(new File(ConfigData.JSON_DATA_FILE_PATH));
-
+            JsonNode node = MAPPER.readTree(new File(filePath));
             for (String key : keys) {
                 node = node.path(key);
             }
-
-            value = node.asText();
-            System.out.println("Value: " + value);
-
+            String value = node.asText();
+            LogUtils.debug("JSON read [" + String.join(".", keys) + "] = " + value);
+            return value;
         } catch (IOException e) {
-            e.printStackTrace();
+            LogUtils.error("Failed to read JSON: " + filePath, e);
+            return "";
         }
-
-        return value;
     }
 
-    // Get value from JSON file in new file path with multiple keys
-    public static String getValueJsonObject_FilePath(String filePath, String... keys) {
-        String value = null;
-        ObjectMapper objectMapper = new ObjectMapper();
-
-        try {
-            JsonNode node = objectMapper.readTree(new File(filePath));
-
-            for (String key : keys) {
-                node = node.path(key);
-            }
-
-            value = node.asText();
-            System.out.println("Value: " + value);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return value;
-    }
-
-    // Get value from JSON array
+    /**
+     * Reads a value from a JSON array at the given index and path.
+     *
+     * @param itemIndex the index in the root JSON array
+     * @param keys      path within the array item
+     */
     public static String getValueJsonArray(int itemIndex, String... keys) {
-        String value = null;
-        ObjectMapper objectMapper = new ObjectMapper();
+        return getValueJsonArrayFromFile(ConfigData.JSON_DATA_FILE_PATH, itemIndex, keys);
+    }
 
+    /**
+     * Reads a value from a JSON array in a specific file.
+     */
+    public static String getValueJsonArrayFromFile(String filePath, int itemIndex, String... keys) {
         try {
-            JsonNode rootNode = objectMapper.readTree(new File(ConfigData.JSON_DATA_FILE_PATH));
-
-            // Lấy item tại index từ mảng gốc
-            JsonNode itemNode = rootNode.get(itemIndex);
-            if (itemNode == null || !itemNode.isObject()) {
-                throw new IllegalArgumentException("Item index không hợp lệ hoặc không phải object.");
+            JsonNode rootNode = MAPPER.readTree(new File(filePath));
+            JsonNode item = rootNode.get(itemIndex);
+            if (item == null || !item.isObject()) {
+                throw new IllegalArgumentException("Invalid item index: " + itemIndex);
             }
-
-            JsonNode current = itemNode;
+            JsonNode current = item;
             for (String key : keys) {
                 current = current.path(key);
             }
-
-            value = current.asText();
-            System.out.println("Value: " + value);
-
+            String value = current.asText();
+            LogUtils.debug("JSON array[" + itemIndex + "] [" + String.join(".", keys) + "] = " + value);
+            return value;
         } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return value;
-    }
-
-    // Get value from JSON array in new file path
-    public static String getValueJsonArray_FilePath(String filePath, int itemIndex, String... keys) {
-        String value = null;
-        ObjectMapper objectMapper = new ObjectMapper();
-
-        try {
-            JsonNode rootNode = objectMapper.readTree(new File(filePath));
-
-            // Lấy item tại index từ mảng gốc
-            JsonNode itemNode = rootNode.get(itemIndex);
-            if (itemNode == null || !itemNode.isObject()) {
-                throw new IllegalArgumentException("Item index không hợp lệ hoặc không phải object.");
-            }
-
-            JsonNode current = itemNode;
-            for (String key : keys) {
-                current = current.path(key);
-            }
-
-            value = current.asText();
-            System.out.println("Value: " + value);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return value;
-    }
-
-    public static void updateValueJsonObject(String keyName, Number value) {
-        Reader reader;
-        try {
-            reader = Files.newBufferedReader(Paths.get(ConfigData.JSON_DATA_FILE_PATH));
-
-            Gson gson = new Gson();
-            // Convert Json file to Json Object
-            JsonObject jsonObject = gson.fromJson(reader, JsonObject.class);
-            System.out.println("Original JSON: " + jsonObject);
-
-            // Update value if exist key
-            jsonObject.addProperty(keyName, value);
-
-            System.out.println("Modified JSON: " + jsonObject);
-
-            // Store new Json data to file
-            File jsonFile = new File(ConfigData.JSON_DATA_FILE_PATH);
-            OutputStream outputStream = new FileOutputStream(jsonFile);
-            outputStream.write(gson.toJson(jsonObject).getBytes());
-            outputStream.flush();
-            reader.close();
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+            LogUtils.error("Failed to read JSON array: " + filePath, e);
+            return "";
         }
     }
 
-    public static void updateValueJsonObject(String keyName, String value) {
-        Reader reader;
-        try {
-            reader = Files.newBufferedReader(Paths.get(ConfigData.JSON_DATA_FILE_PATH));
+    // ═══════════════════════ UPDATE OBJECT ═══════════════════════
 
-            Gson gson = new Gson();
-            // Convert Json file to Json Object
-            JsonObject jsonObject = gson.fromJson(reader, JsonObject.class);
-            System.out.println("Original JSON: " + jsonObject);
-
-            if (jsonObject.has(keyName)) {
-                System.out.println("🔁 Update key: '" + keyName + "'");
-            } else {
-                System.out.println("➕ Add new key: '" + keyName + "'");
-            }
-
-            // Update value if exist key
-            jsonObject.addProperty(keyName, value);
-
-            System.out.println("Modified JSON: " + jsonObject);
-
-            // Store new Json data to file
-            File jsonFile = new File(ConfigData.JSON_DATA_FILE_PATH);
-            OutputStream outputStream = new FileOutputStream(jsonFile);
-            outputStream.write(gson.toJson(jsonObject).getBytes());
-            outputStream.flush();
-            reader.close();
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    /**
+     * Updates a key in the root JSON object of the default data file.
+     */
+    public static void updateValueJsonObject(String key, String value) {
+        updateValueJsonObject(ConfigData.JSON_DATA_FILE_PATH, key, value);
     }
 
-    public static void updateValueJsonObject(String parentKey, String keyName, Number value) {
-        Reader reader;
-        try {
-            reader = Files.newBufferedReader(Paths.get(ConfigData.JSON_DATA_FILE_PATH));
-
-            Gson gson = new Gson();
-            // Convert Json file to Json Object
-            JsonObject jsonObject = gson.fromJson(reader, JsonObject.class);
-            System.out.println("Original JSON: " + jsonObject);
-
-            // Đảm bảo parentKey tồn tại
-            if (!jsonObject.has(parentKey) || !jsonObject.get(parentKey).isJsonObject()) {
-                jsonObject.add(parentKey, new JsonObject());
-            }
-
-            // Update value if exist key
-            jsonObject.getAsJsonObject(parentKey).addProperty(keyName, value);
-
-            System.out.println("Modified JSON: " + jsonObject);
-
-            // Store new Json data to file
-            File jsonFile = new File(ConfigData.JSON_DATA_FILE_PATH);
-            OutputStream outputStream = new FileOutputStream(jsonFile);
-            outputStream.write(gson.toJson(jsonObject).getBytes());
-            outputStream.flush();
-            reader.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    public static void updateValueJsonObject(String key, Number value) {
+        updateValueJsonObject(ConfigData.JSON_DATA_FILE_PATH, key, value);
     }
 
-    public static void updateValueJsonObject(String parentKey, String keyName, String value) {
-        Reader reader;
-        try {
-            reader = Files.newBufferedReader(Paths.get(ConfigData.JSON_DATA_FILE_PATH));
-
-            Gson gson = new Gson();
-            // Convert Json file to Json Object
-            JsonObject jsonObject = gson.fromJson(reader, JsonObject.class);
-            System.out.println("Original JSON: " + jsonObject);
-
-            // Đảm bảo parentKey tồn tại
-            if (!jsonObject.has(parentKey) || !jsonObject.get(parentKey).isJsonObject()) {
-                jsonObject.add(parentKey, new JsonObject());
-            }
-
-            // Gán keyName vào object con
-            jsonObject.getAsJsonObject(parentKey).addProperty(keyName, value);
-
-            System.out.println("Modified JSON: " + jsonObject);
-
-            // Store new Json data to file
-            File jsonFile = new File(ConfigData.JSON_DATA_FILE_PATH);
-            OutputStream outputStream = new FileOutputStream(jsonFile);
-            outputStream.write(gson.toJson(jsonObject).getBytes());
-            outputStream.flush();
-            reader.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    /**
+     * Updates a key in the root JSON object of the given file.
+     */
+    public static void updateValueJsonObject(String filePath, String key, String value) {
+        JsonObject obj = readJsonObject(filePath);
+        logUpdateAction(obj, key);
+        obj.addProperty(key, value);
+        writeJsonObject(filePath, obj);
     }
 
-    public static void updateValueJsonObject_FilePath(String filePath, String keyName, String value) {
-        Reader reader;
-        try {
-            reader = Files.newBufferedReader(Paths.get(filePath));
-
-            Gson gson = new Gson();
-            // Convert Json file to Json Object
-            JsonObject jsonObject = gson.fromJson(reader, JsonObject.class);
-            System.out.println("Original JSON: " + jsonObject);
-
-            // Đảm bảo keyName tồn tại
-            if (!jsonObject.has(keyName) || !jsonObject.get(keyName).isJsonObject()) {
-                jsonObject.add(keyName, new JsonObject());
-            }
-
-            // Update value if exist key
-            jsonObject.addProperty(keyName, value);
-
-            System.out.println("Modified JSON: " + jsonObject);
-
-            // Store new Json data to new file
-            File jsonFile = new File(filePath);
-            OutputStream outputStream = new FileOutputStream(jsonFile);
-            outputStream.write(gson.toJson(jsonObject).getBytes());
-            outputStream.flush();
-
-            // Close reader
-            reader.close();
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    public static void updateValueJsonObject(String filePath, String key, Number value) {
+        JsonObject obj = readJsonObject(filePath);
+        obj.addProperty(key, value);
+        writeJsonObject(filePath, obj);
     }
 
-    public static void updateValueJsonObject_FilePath(String filePath, String keyName, Number value) {
-        Reader reader;
-        try {
-            reader = Files.newBufferedReader(Paths.get(filePath));
-
-            Gson gson = new Gson();
-            // Convert Json file to Json Object
-            JsonObject jsonObject = gson.fromJson(reader, JsonObject.class);
-            System.out.println("Original JSON: " + jsonObject);
-
-            // Đảm bảo parentKey tồn tại
-            if (!jsonObject.has(keyName) || !jsonObject.get(keyName).isJsonObject()) {
-                jsonObject.add(keyName, new JsonObject());
-            }
-
-            // Update value if exist key
-            jsonObject.addProperty(keyName, value);
-
-            System.out.println("Modified JSON: " + jsonObject);
-
-            // Store new Json data to new file
-            File jsonFile = new File(filePath);
-            OutputStream outputStream = new FileOutputStream(jsonFile);
-            outputStream.write(gson.toJson(jsonObject).getBytes());
-            outputStream.flush();
-
-            // Close reader
-            reader.close();
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    /**
+     * Updates a nested key ({@code parentKey.childKey}) in the default data file.
+     */
+    public static void updateNestedValueJsonObject(String parentKey, String childKey, String value) {
+        updateNestedJsonObject(ConfigData.JSON_DATA_FILE_PATH, parentKey, childKey, value);
     }
 
-    public static void updateValueJsonObject_FilePath(String filePath, String parentKey, String keyName, String value) {
-        Reader reader;
-        try {
-            reader = Files.newBufferedReader(Paths.get(filePath));
-
-            Gson gson = new Gson();
-            // Convert Json file to Json Object
-            JsonObject jsonObject = gson.fromJson(reader, JsonObject.class);
-            System.out.println("Original JSON: " + jsonObject);
-
-            // Đảm bảo parentKey tồn tại
-            if (!jsonObject.has(parentKey) || !jsonObject.get(parentKey).isJsonObject()) {
-                jsonObject.add(parentKey, new JsonObject());
-            }
-
-            // Update value if exist key
-            jsonObject.getAsJsonObject(parentKey).addProperty(keyName, value);
-
-            System.out.println("Modified JSON: " + jsonObject);
-
-            // Store new Json data to file
-            File jsonFile = new File(filePath);
-            OutputStream outputStream = new FileOutputStream(jsonFile);
-            outputStream.write(gson.toJson(jsonObject).getBytes());
-            outputStream.flush();
-            reader.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    public static void updateNestedValueJsonObject(String parentKey, String childKey, Number value) {
+        updateNestedJsonObject(ConfigData.JSON_DATA_FILE_PATH, parentKey, childKey, value);
     }
 
-    public static void updateValueJsonObject_FilePath(String filePath, String parentKey, String keyName, Number value) {
-        Reader reader;
-        try {
-            reader = Files.newBufferedReader(Paths.get(filePath));
-
-            Gson gson = new Gson();
-            // Convert Json file to Json Object
-            JsonObject jsonObject = gson.fromJson(reader, JsonObject.class);
-            System.out.println("Original JSON: " + jsonObject);
-
-            // Đảm bảo parentKey tồn tại
-            if (!jsonObject.has(parentKey) || !jsonObject.get(parentKey).isJsonObject()) {
-                jsonObject.add(parentKey, new JsonObject());
-            }
-
-            // Update value if exist key
-            jsonObject.getAsJsonObject(parentKey).addProperty(keyName, value);
-
-            System.out.println("Modified JSON: " + jsonObject);
-
-            // Store new Json data to file
-            File jsonFile = new File(filePath);
-            OutputStream outputStream = new FileOutputStream(jsonFile);
-            outputStream.write(gson.toJson(jsonObject).getBytes());
-            outputStream.flush();
-            reader.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    /**
+     * Updates a nested key in the specified file.
+     */
+    public static void updateNestedJsonObject(String filePath, String parentKey, String childKey,
+            String value) {
+        JsonObject obj = readJsonObject(filePath);
+        ensureObject(obj, parentKey);
+        obj.getAsJsonObject(parentKey).addProperty(childKey, value);
+        writeJsonObject(filePath, obj);
     }
 
+    public static void updateNestedJsonObject(String filePath, String parentKey, String childKey,
+            Number value) {
+        JsonObject obj = readJsonObject(filePath);
+        ensureObject(obj, parentKey);
+        obj.getAsJsonObject(parentKey).addProperty(childKey, value);
+        writeJsonObject(filePath, obj);
+    }
+
+    // ═══════════════════════ UPDATE ARRAY ═══════════════════════
+
+    /**
+     * Updates a value at the given path inside a JSON array element in the default file.
+     *
+     * @param value the new value
+     * @param index the array index
+     * @param keys  path to the target key within the array element
+     */
     public static void updateValueJsonArray(String value, int index, String... keys) {
-        if (keys == null || keys.length == 0) {
-            throw new IllegalArgumentException("Phải cung cấp ít nhất một Key");
-        }
-
-        try (Reader reader = Files.newBufferedReader(Paths.get(ConfigData.JSON_DATA_FILE_PATH))) {
-            Gson gson = new Gson();
-            JsonArray jsonArray = gson.fromJson(reader, JsonArray.class);
-
-            // Kiểm tra index hợp lệ
-            if (index < 0 || index >= jsonArray.size()) {
-                throw new IndexOutOfBoundsException("Tham số index nằm ngoài giới hạn.");
-            }
-
-            JsonObject current = jsonArray.get(index).getAsJsonObject();
-
-            // Duyệt từ key[0] đến key[n-2], tạo JsonObject nếu chưa có
-            for (int i = 0; i < keys.length - 1; i++) {
-                String key = keys[i];
-                if (!current.has(key) || !current.get(key).isJsonObject()) {
-                    current.add(key, new JsonObject());
-                }
-                current = current.getAsJsonObject(key);
-            }
-
-            // Gán giá trị cho key cuối
-            current.addProperty(keys[keys.length - 1], value);
-
-            // Ghi lại file
-            try (OutputStream outputStream = new FileOutputStream(ConfigData.JSON_DATA_FILE_PATH)) {
-                outputStream.write(gson.toJson(jsonArray).getBytes());
-                outputStream.flush();
-            }
-
-            System.out.println("✅ Updated index " + index + ": " + String.join(" → ", keys) + " = " + value);
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        updateValueJsonArray(ConfigData.JSON_DATA_FILE_PATH, value, index, keys);
     }
 
-    public static void updateValueJsonArray_FilePath(String filePath, String value, int index, String... keys) {
+    /**
+     * Updates a value at the given path inside a JSON array element in the specified file.
+     */
+    public static void updateValueJsonArray(String filePath, String value, int index,
+            String... keys) {
         if (keys == null || keys.length == 0) {
-            throw new IllegalArgumentException("Phải cung cấp ít nhất một Key");
+            throw new IllegalArgumentException("At least one key must be provided");
         }
-
         try (Reader reader = Files.newBufferedReader(Paths.get(filePath))) {
-            Gson gson = new Gson();
-            JsonArray jsonArray = gson.fromJson(reader, JsonArray.class);
+            JsonArray jsonArray = GSON.fromJson(reader, JsonArray.class);
 
-            // Kiểm tra index hợp lệ
             if (index < 0 || index >= jsonArray.size()) {
-                throw new IndexOutOfBoundsException("Tham số index nằm ngoài giới hạn.");
+                throw new IndexOutOfBoundsException("Index out of bounds: " + index);
             }
 
             JsonObject current = jsonArray.get(index).getAsJsonObject();
-
-            // Duyệt từ key[0] đến key[n-2], tạo JsonObject nếu chưa có
             for (int i = 0; i < keys.length - 1; i++) {
-                String key = keys[i];
-                if (!current.has(key) || !current.get(key).isJsonObject()) {
-                    current.add(key, new JsonObject());
-                }
-                current = current.getAsJsonObject(key);
+                ensureObject(current, keys[i]);
+                current = current.getAsJsonObject(keys[i]);
             }
-
-            // Gán giá trị cho key cuối
             current.addProperty(keys[keys.length - 1], value);
 
-            // Ghi lại file
-            try (OutputStream outputStream = new FileOutputStream(filePath)) {
-                outputStream.write(gson.toJson(jsonArray).getBytes());
-                outputStream.flush();
-            }
-
-            System.out.println("✅ Updated index " + index + ": " + String.join(" → ", keys) + " = " + value);
+            writeJsonArray(filePath, jsonArray);
+            LogUtils.info("JSON array[" + index + "] updated: "
+                    + String.join(".", keys) + " = " + value);
 
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Failed to update JSON array: " + filePath, e);
         }
     }
 
+    // ═══════════════════════ PRIVATE HELPERS ═══════════════════════
+
+    private static JsonObject readJsonObject(String filePath) {
+        try (Reader reader = Files.newBufferedReader(Paths.get(filePath))) {
+            return GSON.fromJson(reader, JsonObject.class);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to read JSON file: " + filePath, e);
+        }
+    }
+
+    private static void writeJsonObject(String filePath, JsonObject obj) {
+        Path path = Paths.get(filePath);
+        try (OutputStream out = Files.newOutputStream(path)) {
+            out.write(GSON.toJson(obj).getBytes(StandardCharsets.UTF_8));
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to write JSON file: " + filePath, e);
+        }
+    }
+
+    private static void writeJsonArray(String filePath, JsonArray array) {
+        Path path = Paths.get(filePath);
+        try (OutputStream out = Files.newOutputStream(path)) {
+            out.write(GSON.toJson(array).getBytes(StandardCharsets.UTF_8));
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to write JSON array: " + filePath, e);
+        }
+    }
+
+    private static void ensureObject(JsonObject parent, String key) {
+        if (!parent.has(key) || !parent.get(key).isJsonObject()) {
+            parent.add(key, new JsonObject());
+        }
+    }
+
+    private static void logUpdateAction(JsonObject obj, String key) {
+        if (obj.has(key)) {
+            LogUtils.debug("Updating existing key: " + key);
+        } else {
+            LogUtils.debug("Adding new key: " + key);
+        }
+    }
 }

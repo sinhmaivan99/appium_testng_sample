@@ -1,44 +1,37 @@
 package testcases;
 
 import commons.BaseTest;
+import io.qameta.allure.*;
 import listener.TestListener;
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 import pages.LoginPage;
 
-/*
-* suite -> test -> class -> method -> tcs
-* allure serve target/allure-results
-* */
-
-/*
-* Có 3 cách sử dụng testListener
-* 1: Sử dụng trong class testcase: @Listeners(TestListener.class)
-* 2: sử dụng trong class BaseTest để apply all class testcase: @Listeners({TestListener.class})
-* 3: sử dụng trong file xml runner:
-* */
-
+/**
+ * Test cases for the Login screen.
+ *
+ * <p>Run all tests: {@code mvn test -Dsurefire.suiteXmlFiles=suites/SuiteLoginTest.xml}</p>
+ * <p>View Allure report: {@code allure serve target/allure-results}</p>
+ */
+@Listeners(TestListener.class)
+@Epic("Mobile App")
+@Feature("Login")
 public class LoginTest extends BaseTest {
 
-    // Khai báo các đối tượng Page class liên quan
-    private LoginPage loginPage;
-
-    @Test
-    public void testLoginFailWithUsernameInvalid() {
-        // Khởi tạo đối tượng Page class
-        loginPage = new LoginPage();
-
-        // Gọi hàm từ Page class sử dụng
-        loginPage.login("admin123", "admin");
+    @Test(description = "TC01 — Login with invalid credentials should show error")
+    @Story("Invalid Login")
+    @Severity(SeverityLevel.CRITICAL)
+    public void testLoginFailWithInvalidCredentials() {
+        LoginPage loginPage = new LoginPage();
+        loginPage.login("admin123", "wrongpassword");
         loginPage.verifyLoginFail();
     }
 
-    @Test
+    @Test(description = "TC02 — Login with valid credentials should navigate to Menu")
+    @Story("Valid Login")
+    @Severity(SeverityLevel.BLOCKER)
     public void testLoginSuccess() {
-        // Khởi tạo đối tượng Page class
-        loginPage = new LoginPage();
-
-        // Gọi hàm từ Page class sử dụng
+        LoginPage loginPage = new LoginPage();
         loginPage.login("admin", "admin");
         loginPage.verifyLoginSuccess();
     }

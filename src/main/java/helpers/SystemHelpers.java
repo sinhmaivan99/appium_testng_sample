@@ -36,25 +36,18 @@ public class SystemHelpers {
     public static boolean createFolder(String path) {
         try {
             File folder = new File(path);
-
-            // Kiểm tra xem đã tồn tại và có phải là folder không
             if (folder.exists() && folder.isDirectory()) {
-                System.out.println("Folder đã tồn tại: " + path);
-                return false;
+                return false; // already exists, nothing to do
             }
-
-            // Tạo folder và các thư mục cha
             boolean created = folder.mkdirs();
-
             if (created) {
-                System.out.println("Tạo folder thành công: " + path);
+                LogUtils.debug("Created folder: " + path);
             } else {
-                System.out.println("Tạo folder thất bại: " + path);
+                LogUtils.warn("Failed to create folder: " + path);
             }
-
             return created;
         } catch (Exception e) {
-            System.out.println("Lỗi khi tạo folder: " + e.getMessage());
+            LogUtils.error("Error creating folder: " + path, e);
             return false;
         }
     }
@@ -72,28 +65,12 @@ public class SystemHelpers {
         return arrayListString;
     }
 
-    public static boolean checkValueInListString(String expected, String listValues[]) {
-        boolean found = false;
-
-        for (String s : listValues) {
-            if (s.equals(expected)) {
-                found = true;
-                break;
-            }
-        }
-        return found;
+    public static boolean checkValueInListString(String expected, String[] listValues) {
+        return java.util.Arrays.asList(listValues).contains(expected);
     }
 
     public static boolean checkValueInListString(String expected, List<String> listValues) {
-        boolean found = false;
-
-        for (String s : listValues) {
-            if (s.equals(expected)) {
-                found = true;
-                break;
-            }
-        }
-        return found;
+        return listValues.contains(expected);
     }
 
     public static void killProcessOnPort(String port) {
@@ -108,22 +85,24 @@ public class SystemHelpers {
 
         try {
             Process process = Runtime.getRuntime().exec(command);
-            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] tokens = line.trim().split("\\s+");
-                String pid = tokens[1];  // PID position may vary by OS
-                if (System.getProperty("os.name").toLowerCase().contains("win")) {
-                    Runtime.getRuntime().exec("taskkill /F /PID " + pid);
-                } else {
-                    Runtime.getRuntime().exec("kill -9 " + pid);
+            try (BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(process.getInputStream()))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    String[] tokens = line.trim().split("\\s+");
+                    String pid = tokens[1]; // PID position varies by OS
+                    if (System.getProperty("os.name").toLowerCase().contains("win")) {
+                        Runtime.getRuntime().exec("taskkill /F /PID " + pid);
+                    } else {
+                        Runtime.getRuntime().exec("kill -9 " + pid);
+                    }
                 }
             }
-            reader.close();
             process.waitFor();
-            System.out.println("####### Kill process on port " + port + " successfully.");
+            LogUtils.info("Killed process on port " + port);
         } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
+            LogUtils.error("Failed to kill process on port " + port, e);
+            Thread.currentThread().interrupt();
         }
     }
 
@@ -142,23 +121,24 @@ public class SystemHelpers {
         processBuilder.redirectErrorStream(true);
 
         try {
-            // Start the process
             Process process = processBuilder.start();
-            System.out.println("Appium server started with plugins.");
+            LogUtils.info("Appium server started with plugins.");
 
-            // Optional: Read the output (if needed for debugging)
-            new Thread(() -> {
-                try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+            Thread outputThread = new Thread(() -> {
+                try (BufferedReader reader = new BufferedReader(
+                        new InputStreamReader(process.getInputStream()))) {
                     String line;
                     while ((line = reader.readLine()) != null) {
-                        System.out.println(line);
+                        LogUtils.debug(line);
                     }
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    LogUtils.error("Error reading Appium output", e);
                 }
-            }).start();
+            });
+            outputThread.setDaemon(true);
+            outputThread.start();
         } catch (IOException e) {
-            e.printStackTrace();
+            LogUtils.error("Failed to start Appium with plugins", e);
         }
     }
 }

@@ -1,22 +1,20 @@
 package pages;
 
-import drivers.DriverManager;
 import io.appium.java_client.pagefactory.AndroidFindBy;
-import io.appium.java_client.pagefactory.AppiumFieldDecorator;
 import io.appium.java_client.pagefactory.iOSXCUITFindBy;
+import io.qameta.allure.Step;
 import keywords.MobileUI;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.PageFactory;
 
 import java.util.List;
 
+/**
+ * Page Object for the Menu (Table list) screen.
+ */
 public class MenuPage extends BasePage {
-    // Constructor
-    public MenuPage() {
-        PageFactory.initElements(new AppiumFieldDecorator(DriverManager.getDriver()), this);
-    }
 
-    //Element/Locators thuộc chính trang này (màn hình này)
+    // ═══════════════════════ LOCATORS ═══════════════════════
+
     @AndroidFindBy(xpath = "//android.widget.EditText")
     @iOSXCUITFindBy(accessibility = "")
     private WebElement inputSearch;
@@ -29,19 +27,24 @@ public class MenuPage extends BasePage {
     @iOSXCUITFindBy(xpath = "")
     private List<WebElement> listItemTable;
 
-    public void searchTable(String tableName) {
+    // ═══════════════════════ ACTIONS ═══════════════════════
+
+    @Step("Search for table: {tableName}")
+    public MenuPage searchTable(String tableName) {
         clickMenuMenu();
-        MobileUI.clickElement(inputSearch); // Click vào ô tìm kiếm
-        MobileUI.setText(inputSearch, tableName); // Nhập từ khóa tìm kiếm
+        MobileUI.clickElement(inputSearch);
+        MobileUI.setText(inputSearch, tableName);
+        return this;
     }
 
-    public void checkTableResultTotal(int expectedTotal) {
-        List<WebElement> listTables = listItemTable;
-        System.out.println("Table total: " + listTables.size());
-        //Assert.assertTrue(listTables.size() >= expectedTotal);
-        MobileUI.assertTrueCondition(listTables.size() >= expectedTotal, "The table total is not correct.");
+    @Step("Verify table count is at least: {expectedMinimum}")
+    public void verifyTableResultMinimum(int expectedMinimum) {
+        int actual = listItemTable.size();
+        MobileUI.assertTrueCondition(actual >= expectedMinimum,
+                "Expected at least " + expectedMinimum + " tables but found " + actual);
     }
 
+    @Step("Click first table item")
     public void clickFirstItemTable() {
         MobileUI.clickElement(firstItemTable);
     }

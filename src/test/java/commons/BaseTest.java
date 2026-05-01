@@ -13,7 +13,6 @@ import io.appium.java_client.service.local.AppiumDriverLocalService;
 import io.appium.java_client.service.local.AppiumServiceBuilder;
 import io.appium.java_client.service.local.flags.GeneralServerFlag;
 import keywords.MobileUI;
-import listener.TestListener;
 import org.testng.annotations.*;
 
 import java.net.MalformedURLException;
@@ -21,189 +20,216 @@ import java.net.URL;
 import java.time.Duration;
 import java.util.Objects;
 
-/*
- * Có 3 cách sử dụng testListener
- * 1: Sử dụng trong class testcase: @Listeners(TestListener.class)
- * 2: sử dụng trong class BaseTest để apply all class testcase: @Listeners({TestListener.class})
- * 3: sử dụng trong file xml runner:
- * */
-
+/**
+ * Base class for all TestNG test classes.
+ * <p>
+ * Handles Appium driver lifecycle (init/teardown) and optional screen recording.
+ * Extend this class in your test classes.
+ * </p>
+ *
+ * <h3>TestListener can be applied in three ways:</h3>
+ * <ol>
+ *     <li>On each test class: {@code @Listeners(TestListener.class)}</li>
+ *     <li>On this BaseTest to apply globally: {@code @Listeners({TestListener.class})}</li>
+ *     <li>In the TestNG XML suite file (recommended)</li>
+ * </ol>
+ */
 public class BaseTest {
 
-    private AppiumDriverLocalService service;
-    private String HOST = "127.0.0.1";
-    private String PORT = "4723";
+    private static final String DEFAULT_HOST = "127.0.0.1";
+    private static final String DEFAULT_PORT = "4723";
+    private static final int APPIUM_SERVICE_TIMEOUT_SECONDS = 60;
+
+    private AppiumDriverLocalService appiumService;
+    private String currentHost = DEFAULT_HOST;
+    private String currentPort = DEFAULT_PORT;
     private String videoFileName;
 
-    public void runAppiumServer(String host, String port) {
-        System.out.println("host in AppiumServer: " + host);
-        System.out.println("port in AppiumServer: " + port);
-
-        HOST = host;
-        PORT = port;
-
-        SystemHelpers.killProcessOnPort(PORT);
-
-        AppiumServiceBuilder builder = new AppiumServiceBuilder();
-        builder.withIPAddress(HOST);
-        builder.usingPort(Integer.parseInt(PORT));
-        builder.withArgument(GeneralServerFlag.LOG_LEVEL, "info");
-        int TIMEOUT_SERVICE = 60;
-        builder.withTimeout(Duration.ofSeconds(TIMEOUT_SERVICE));
-
-        service = AppiumDriverLocalService.buildService(builder);
-        service.start();
-
-        if (service.isRunning()) {
-            System.out.println("##### Appium server started on " + HOST + ":" + PORT);
-        } else {
-            System.out.println("Failed to start Appium server.");
-        }
-    }
+    // ═══════════════════════ SUITE SETUP ═══════════════════════
 
     @BeforeSuite
-    public void DeleteFilesInMultipleFolders() {
-        // Xóa data folder screenshots và videos
-        DeleteFilesInMultipleFolders.deleteFilesInFolder();
+    public void cleanOutputFolders() {
+        FileCleanupHelper.deleteOutputFiles();
     }
+
+    // ═══════════════════════ METHOD SETUP ═══════════════════════
 
     @BeforeMethod(alwaysRun = true)
-    @Parameters({ "platformName", "platformVersion", "deviceName", "udid", "automationName", "appPackage",
-            "appActivity", "noReset", "host", "port", "systemPort" })
-    public void setUpDriver(@Optional String platformName, String platformVersion, String deviceName,
-            @Optional String udid, @Optional String automationName, @Optional String appPackage,
-            @Optional String appActivity, boolean noReset, String host, String port, @Optional String systemPort)
-            throws MalformedURLException {
-        runAppiumServer(host, port);
+    @Parameters({"platformName", "platformVersion", "deviceName", "udid", "automationName",
+            "appPackage", "appActivity", "noReset", "host", "port", "systemPort"})
+    public void setUpDriver(
+            @Optional String platformName,
+            String platformVersion,
+            String deviceName,
+            @Optional String udid,
+            @Optional String automationName,
+            @Optional String appPackage,
+            @Optional String appActivity,
+            boolean noReset,
+            String host,
+            String port,
+            @Optional String systemPort) throws MalformedURLException {
 
-        System.out.println("platformName: " + platformName);
-        System.out.println("platformVersion: " + platformVersion);
-        System.out.println("deviceName: " + deviceName);
-        System.out.println("udid: " + udid);
-        System.out.println("automationName: " + automationName);
-        System.out.println("appPackage: " + appPackage);
-        System.out.println("appActivity: " + appActivity);
-        System.out.println("noReset: " + noReset);
-        System.out.println("host: " + host);
-        System.out.println("port: " + port);
-        System.out.println("systemPort: " + systemPort);
+        currentHost = host;
+        currentPort = port;
 
-        AppiumDriver driver = null;
+        startAppiumServer(host, port);
 
+        LogUtils.info("Initializing driver: platform=" + platformName
+                + " device=" + deviceName + " thread=" + Thread.currentThread().getId());
+
+        AppiumDriver driver;
         try {
-            if (platformName.equalsIgnoreCase("Android")) {
-                UiAutomator2Options options = new UiAutomator2Options();
-                options.setPlatformName(platformName);
-                options.setPlatformVersion(platformVersion);
-                options.setDeviceName(deviceName);
-
-                if (udid != null && !udid.isEmpty()) {
-                    options.setUdid(udid);
-                }
-
-                if (appPackage != null && !appPackage.isEmpty()) {
-                    options.setAppPackage(appPackage);
-                }
-
-                if (appActivity != null && !appActivity.isEmpty()) {
-                    options.setAppActivity(appActivity);
-                }
-
-                // options.setApp("/path/to/your/app.apk");
-                options.setAutomationName(Objects.requireNonNullElse(automationName, "UiAutomator2"));
-                options.setNoReset(noReset);
-
-                if (systemPort != null && !systemPort.isEmpty()) {
-                    options.setSystemPort(Integer.parseInt(systemPort));
-                }
-
-                driver = new AndroidDriver(new URL("http://" + host + ":" + port), options);
-                System.out.println("Khởi tạo AndroidDriver cho thread: " + Thread.currentThread().getId()
-                        + " trên thiết bị: " + deviceName);
-
-            } else if (platformName.equalsIgnoreCase("iOS")) {
-                XCUITestOptions options = new XCUITestOptions();
-                options.setPlatformName(platformName);
-                options.setPlatformVersion(platformVersion);
-                options.setDeviceName(deviceName);
-
-                options.setAutomationName(Objects.requireNonNullElse(automationName, "XCUITest"));
-                options.setNoReset(false);
-
-                driver = new IOSDriver(new URL("http://" + host + ":" + port), options);
-                System.out.println("Khởi tạo IOSDriver cho thread: " + Thread.currentThread().getId()
-                        + " trên thiết bị: " + deviceName);
-
-            } else {
-                throw new IllegalArgumentException("Platform không hợp lệ: " + platformName);
-            }
-
-            // Lưu driver vào ThreadLocal
-            DriverManager.setDriver(driver);
-
-            // Tạo tên file video duy nhất dựa trên device và thread
-            SystemHelpers.createFolder(SystemHelpers.getCurrentDir() + ConfigData.RECORD_VIDEO_PATH);
-            videoFileName = SystemHelpers.getCurrentDir() + ConfigData.RECORD_VIDEO + "/recording_" + deviceName + "_"
-                    + SystemHelpers.makeSlug(DateUtils.getCurrentDateTime()) + ".mp4";
-            CaptureHelpers.startRecording();
+            driver = switch (platformName.trim().toLowerCase()) {
+                case "android" -> createAndroidDriver(host, port, platformName, platformVersion,
+                        deviceName, udid, automationName, appPackage, appActivity, noReset,
+                        systemPort);
+                case "ios" -> createIOSDriver(host, port, platformName, platformVersion,
+                        deviceName, automationName, noReset);
+                default -> throw new IllegalArgumentException("Unsupported platform: " + platformName);
+            };
         } catch (Exception e) {
-            System.err.println("❌Lỗi nghiêm trọng khi khởi tạo driver cho thread " + Thread.currentThread().getId()
-                    + " trên device " + deviceName + ": " + e.getMessage());
-            // Có thể ném lại lỗi để TestNG biết test setup thất bại
-            throw new RuntimeException("❌Không thể khởi tạo Appium driver ", e);
+            String msg = "❌ Failed to initialize Appium driver for thread "
+                    + Thread.currentThread().getId() + " on device " + deviceName;
+            LogUtils.error(msg, e);
+            throw new RuntimeException(msg, e);
         }
+
+        DriverManager.setDriver(driver);
+
+        // Start video recording
+        videoFileName = SystemHelpers.getCurrentDir() + ConfigData.RECORD_VIDEO_PATH
+                + "/recording_" + deviceName + "_"
+                + SystemHelpers.makeSlug(DateUtils.getCurrentDateTime()) + ".mp4";
+        SystemHelpers.createFolder(SystemHelpers.getCurrentDir() + ConfigData.RECORD_VIDEO_PATH);
+        CaptureHelpers.startRecording();
     }
+
+    // ═══════════════════════ METHOD TEARDOWN ═══════════════════════
 
     @AfterMethod(alwaysRun = true)
     public void tearDownDriver() {
         if (DriverManager.getDriver() != null) {
-            // Capture screen
             CaptureHelpers.captureScreenshot();
-
-            // Stop recording video
             MobileUI.sleep(2);
             CaptureHelpers.stopRecording(videoFileName);
-
             DriverManager.quitDriver();
-            LogUtils.info("##### Driver quit and removed.");
+            LogUtils.info("Driver quit for thread: " + Thread.currentThread().getId());
         }
 
-        // Dừng Appium server LOCAL nếu đã khởi động
-        if (ConfigData.APPIUM_DRIVER_LOCAL_SERVICE.trim().equalsIgnoreCase("true")) {
+        if ("true".equalsIgnoreCase(ConfigData.APPIUM_DRIVER_LOCAL_SERVICE.trim())) {
             stopAppiumServer();
         }
     }
 
-    // @AfterSuite
-    public void stopAppiumServer() {
-        if (service != null && service.isRunning()) {
-            service.stop();
-            System.out.println("##### Appium server stopped on " + HOST + ":" + PORT);
+    // ═══════════════════════ APPIUM SERVER ═══════════════════════
+
+    /**
+     * Starts a local Appium server on the specified host and port.
+     */
+    public void startAppiumServer(String host, String port) {
+        LogUtils.info("Starting Appium server on " + host + ":" + port);
+        SystemHelpers.killProcessOnPort(port);
+
+        AppiumServiceBuilder builder = new AppiumServiceBuilder()
+                .withIPAddress(host)
+                .usingPort(Integer.parseInt(port))
+                .withArgument(GeneralServerFlag.LOG_LEVEL, "info")
+                .withTimeout(Duration.ofSeconds(APPIUM_SERVICE_TIMEOUT_SECONDS));
+
+        appiumService = AppiumDriverLocalService.buildService(builder);
+        appiumService.start();
+
+        if (appiumService.isRunning()) {
+            LogUtils.info("✅ Appium server started on " + host + ":" + port);
+        } else {
+            LogUtils.error("❌ Failed to start Appium server on " + host + ":" + port);
         }
-        // Kill process on port
-        SystemHelpers.killProcessOnPort(PORT);
     }
 
-    public void downloadDataFromServer(int dataNumber) {
-        // Navigate to config to download database demo
+    /**
+     * Stops the local Appium server if it is running.
+     */
+    public void stopAppiumServer() {
+        if (appiumService != null && appiumService.isRunning()) {
+            appiumService.stop();
+            LogUtils.info("Appium server stopped on " + currentHost + ":" + currentPort);
+        }
+        SystemHelpers.killProcessOnPort(currentPort);
+    }
+
+    // ═══════════════════════ APP HELPER ═══════════════════════
+
+    /**
+     * Downloads demo data from the app's server database screen.
+     *
+     * @param dataNumber the data set number to download (1–5)
+     */
+    protected void downloadDataFromServer(int dataNumber) {
         DriverManager.getDriver().findElement(AppiumBy.accessibilityId("Config")).click();
         DriverManager.getDriver().findElement(AppiumBy.accessibilityId("Server database")).click();
         MobileUI.sleep(2);
         DriverManager.getDriver()
                 .findElement(AppiumBy.xpath(
-                        "//android.view.View[contains(@content-desc,'Data " + dataNumber + "')]/android.widget.Button"))
+                        "//android.view.View[contains(@content-desc,'Data " + dataNumber
+                                + "')]/android.widget.Button"))
                 .click();
         DriverManager.getDriver().findElement(AppiumBy.accessibilityId("Replace")).click();
         MobileUI.sleep(1);
 
-        // Handle Alert Message, check displayed hoặc getText/getAttribute để kiểm tra
-        // nội dung message
-        if (DriverManager.getDriver().findElement(AppiumBy.accessibilityId("Downloaded")).isDisplayed()) {
-            System.out.println("Database demo downloaded.");
+        boolean downloaded = DriverManager.getDriver()
+                .findElement(AppiumBy.accessibilityId("Downloaded")).isDisplayed();
+        if (downloaded) {
+            LogUtils.info("Demo data " + dataNumber + " downloaded successfully.");
         } else {
-            System.out.println("Warning!! Can not download Database demo.");
+            LogUtils.warn("Could not verify download of demo data " + dataNumber);
         }
         MobileUI.sleep(2);
         DriverManager.getDriver().findElement(AppiumBy.accessibilityId("Back")).click();
+    }
+
+    // ═══════════════════════ DRIVER FACTORIES ═══════════════════════
+
+    private AndroidDriver createAndroidDriver(
+            String host, String port,
+            String platform, String version, String device,
+            String udid, String automationName,
+            String appPackage, String appActivity,
+            boolean noReset, String systemPort) throws MalformedURLException {
+
+        UiAutomator2Options options = new UiAutomator2Options()
+                .setPlatformName(platform)
+                .setPlatformVersion(version)
+                .setDeviceName(device)
+                .setAutomationName(Objects.requireNonNullElse(automationName, "UiAutomator2"))
+                .setNoReset(noReset);
+
+        if (udid != null && !udid.isBlank()) options.setUdid(udid);
+        if (appPackage != null && !appPackage.isBlank()) options.setAppPackage(appPackage);
+        if (appActivity != null && !appActivity.isBlank()) options.setAppActivity(appActivity);
+        if (systemPort != null && !systemPort.isBlank()) {
+            options.setSystemPort(Integer.parseInt(systemPort));
+        }
+
+        LogUtils.info("Creating AndroidDriver on " + device + " (thread "
+                + Thread.currentThread().getId() + ")");
+        return new AndroidDriver(new URL("http://" + host + ":" + port), options);
+    }
+
+    private IOSDriver createIOSDriver(
+            String host, String port,
+            String platform, String version, String device,
+            String automationName, boolean noReset) throws MalformedURLException {
+
+        XCUITestOptions options = new XCUITestOptions()
+                .setPlatformName(platform)
+                .setPlatformVersion(version)
+                .setDeviceName(device)
+                .setAutomationName(Objects.requireNonNullElse(automationName, "XCUITest"))
+                .setNoReset(noReset);
+
+        LogUtils.info("Creating IOSDriver on " + device + " (thread "
+                + Thread.currentThread().getId() + ")");
+        return new IOSDriver(new URL("http://" + host + ":" + port), options);
     }
 }

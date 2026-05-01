@@ -7,105 +7,106 @@ import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestResult;
 import reports.AllureManager;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
+import java.time.Duration;
+import java.time.Instant;
+
+/**
+ * TestNG listener that handles lifecycle events for each test method.
+ * <p>
+ * Responsibilities:
+ * <ul>
+ *     <li>Starting and stopping screen recording (if enabled)</li>
+ *     <li>Capturing screenshots on pass/fail (if configured)</li>
+ *     <li>Attaching artifacts to Allure report</li>
+ *     <li>Logging test results with duration</li>
+ * </ul>
+ * </p>
+ */
 public class TestListener implements ITestListener {
 
+    private static final String TIMESTAMP_ATTR = "startTime";
+
     @Override
-    public void onStart(ITestContext result) {
-        DeleteFilesInMultipleFolders.deleteFilesInFolder();
-        LogUtils.info("♻\uFE0F Setup môi trường: " + result.getStartDate());
+    public void onStart(ITestContext context) {
+        FileCleanupHelper.deleteOutputFiles();
+        LogUtils.info("▶ Suite started: " + context.getName()
+                + " at " + context.getStartDate());
     }
 
     @Override
-    public void onFinish(ITestContext result) {
-        LogUtils.info("\uD83D\uDD06 Kết thúc chạy test: " + result.getEndDate());
+    public void onFinish(ITestContext context) {
+        int passed = context.getPassedTests().size();
+        int failed = context.getFailedTests().size();
+        int skipped = context.getSkippedTests().size();
+        LogUtils.info("🏁 Suite finished: PASS=" + passed + " FAIL=" + failed
+                + " SKIP=" + skipped + " at " + context.getEndDate());
     }
 
     @Override
     public void onTestStart(ITestResult result) {
-        LogUtils.info("➡\uFE0F Bắt đầu chạy test case: " + result.getName());
-
-        // Tạo tên file video duy nhất dựa trên device và thread
-        SystemHelpers.createFolder(SystemHelpers.getCurrentDir() + ConfigData.RECORD_VIDEO_PATH);
-        String videoFileName = SystemHelpers.getCurrentDir() + ConfigData.RECORD_VIDEO_PATH + "/recording_" + "_"
-                + Thread.currentThread().getId() + "_" + SystemHelpers.makeSlug(DateUtils.getCurrentDateTime())
-                + ".mp4";
+        result.setAttribute(TIMESTAMP_ATTR, Instant.now());
+        LogUtils.info("➡ Test started: " + result.getName());
 
         if (ConfigData.RECORD_VIDEO.equalsIgnoreCase("true")) {
+            SystemHelpers.createFolder(SystemHelpers.getCurrentDir() + ConfigData.RECORD_VIDEO_PATH);
             CaptureHelpers.startRecording();
         }
     }
 
     @Override
     public void onTestSuccess(ITestResult result) {
-        LogUtils.info("✅ Test case " + result.getName() + " is passed.");
-
-        LocalDateTime now = LocalDateTime.now(); // lấy ngày giờ hiện tại
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        String formattedDate = now.format(formatter);
-        LogUtils.info("Thời gian: " + formattedDate);
+        long durationMs = Duration.between(
+                (Instant) result.getAttribute(TIMESTAMP_ATTR), Instant.now()).toMillis();
+        LogUtils.info("✅ Test PASSED: " + result.getName() + " (" + durationMs + "ms)");
 
         if (ConfigData.SCREENSHOT_PASS.equalsIgnoreCase("true")) {
             CaptureHelpers.captureScreenshot();
         }
 
-        SystemHelpers.createFolder(SystemHelpers.getCurrentDir() + ConfigData.RECORD_VIDEO_PATH);
-        String videoFileName = SystemHelpers.getCurrentDir() + ConfigData.RECORD_VIDEO_PATH + "/recording_"
-                + result.getName() + "_" + Thread.currentThread().getId() + "_"
-                + SystemHelpers.makeSlug(DateUtils.getCurrentDateTime()) + ".mp4";
-        MobileUI.sleep(5);
-
         if (ConfigData.RECORD_VIDEO.equalsIgnoreCase("true")) {
             MobileUI.sleep(2);
-            CaptureHelpers.stopRecording(videoFileName);
+            CaptureHelpers.stopRecording(buildVideoFileName(result.getName()));
         }
     }
 
     @Override
     public void onTestFailure(ITestResult result) {
-        LogUtils.error("❌ Test case " + result.getName() + " is failed.");
-
-        LocalDateTime now = LocalDateTime.now(); // lấy ngày giờ hiện tại
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        String formattedDate = now.format(formatter);
-        LogUtils.info("Nguyên nhân lỗi: " + result.getThrowable());
+        long durationMs = Duration.between(
+                (Instant) result.getAttribute(TIMESTAMP_ATTR), Instant.now()).toMillis();
+        LogUtils.error("❌ Test FAILED: " + result.getName() + " (" + durationMs + "ms)");
+        LogUtils.error("Cause: " + result.getThrowable());
 
         if (ConfigData.SCREENSHOT_FAIL.equalsIgnoreCase("true")) {
             CaptureHelpers.captureScreenshot();
         }
-        CaptureHelpers.captureScreenshot();
 
-        SystemHelpers.createFolder(SystemHelpers.getCurrentDir() + ConfigData.RECORD_VIDEO_PATH);
-        String videoFileName = SystemHelpers.getCurrentDir() + ConfigData.RECORD_VIDEO_PATH + "/recording_"
-                + result.getName() + "_" + Thread.currentThread().getId() + "_"
-                + SystemHelpers.makeSlug(DateUtils.getCurrentDateTime()) + ".mp4";
+        // Allure attachments
+        AllureManager.saveTextLog(result.getName() + " failed: " + result.getThrowable());
+        AllureManager.saveScreenshotPNG();
 
         if (ConfigData.RECORD_VIDEO.equalsIgnoreCase("true")) {
             MobileUI.sleep(2);
-            CaptureHelpers.stopRecording(videoFileName);
+            CaptureHelpers.stopRecording(buildVideoFileName(result.getName()));
         }
-
-        // Add screenshot to Allure report
-        AllureManager.saveTextLog(result.getName() + " is failed.");
-        AllureManager.saveScreenshotPNG();
-
-        // Connect Jira
-        // Create new issue on Jira
-        // Ghi logs vào file
-        // Xuất report html nhìn trực quan và đẹp mắt
     }
 
     @Override
     public void onTestSkipped(ITestResult result) {
-        LogUtils.info("⛔\uFE0F Test case " + result.getName() + " is skipped.");
+        LogUtils.warn("⛔ Test SKIPPED: " + result.getName());
 
-        SystemHelpers.createFolder(SystemHelpers.getCurrentDir() + ConfigData.RECORD_VIDEO_PATH);
-        String videoFileName = SystemHelpers.getCurrentDir() + ConfigData.RECORD_VIDEO_PATH + "/recording_"
-                + result.getName() + "_" + Thread.currentThread().getId() + "_"
-                + SystemHelpers.makeSlug(DateUtils.getCurrentDateTime()) + ".mp4";
-        MobileUI.sleep(2);
-        CaptureHelpers.stopRecording(videoFileName);
+        if (ConfigData.RECORD_VIDEO.equalsIgnoreCase("true")) {
+            MobileUI.sleep(1);
+            CaptureHelpers.stopRecording(buildVideoFileName(result.getName()));
+        }
+    }
+
+    // ═══════════════════════ PRIVATE ═══════════════════════
+
+    private String buildVideoFileName(String testName) {
+        String timestamp = SystemHelpers.makeSlug(DateUtils.getCurrentDateTime());
+        return SystemHelpers.getCurrentDir() + ConfigData.RECORD_VIDEO_PATH
+                + "/recording_" + testName + "_" + Thread.currentThread().getId()
+                + "_" + timestamp + ".mp4";
     }
 }

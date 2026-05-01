@@ -13,66 +13,109 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.Duration;
 import java.util.Base64;
 
-public class CaptureHelpers {
+/**
+ * Utility for capturing screenshots and recording video on Android devices.
+ */
+public final class CaptureHelpers {
+
+    private static final String SCREENSHOT_FILE_PREFIX = "screenshot_";
+
+    private CaptureHelpers() {
+        // Utility class — prevent instantiation
+    }
+
+    // ═══════════════════════ SCREENSHOT ═══════════════════════
+
+    /**
+     * Captures a screenshot and saves it to the configured screenshot directory.
+     */
     public static void captureScreenshot() {
+        if (DriverManager.getDriver() == null) {
+            LogUtils.warn("Cannot capture screenshot — driver is null");
+            return;
+        }
         try {
-            // Ép kiểu driver thành TakesScreenshot để lấy ảnh màn hình
-            File srcFile = ((TakesScreenshot) DriverManager.getDriver()).getScreenshotAs(OutputType.FILE);
+            File srcFile = ((TakesScreenshot) DriverManager.getDriver())
+                    .getScreenshotAs(OutputType.FILE);
 
             SystemHelpers.createFolder(SystemHelpers.getCurrentDir() + ConfigData.SCREENSHOT_PATH);
-            String filePath = SystemHelpers.getCurrentDir() + ConfigData.SCREENSHOT_PATH + "/screenshoot" + "_" + SystemHelpers.makeSlug(DateUtils.getCurrentDateTime()) + ".png";
+            String fileName = SCREENSHOT_FILE_PREFIX
+                    + SystemHelpers.makeSlug(DateUtils.getCurrentDateTime()) + ".png";
+            Path targetPath = Paths.get(
+                    SystemHelpers.getCurrentDir() + ConfigData.SCREENSHOT_PATH, fileName);
 
-            // Tạo đối tượng Path cho file đích
-            Path targetPath = new File(filePath).toPath();
-
-            // Sao chép file từ nguồn sang đích, thay thế file nếu đã tồn tại
             Files.copy(srcFile.toPath(), targetPath, StandardCopyOption.REPLACE_EXISTING);
-            System.out.println("Chụp ảnh màn hình thành công, lưu tại: " + targetPath.toAbsolutePath());
+            LogUtils.info("Screenshot saved: " + targetPath.toAbsolutePath());
         } catch (IOException e) {
-            System.err.println("Lỗi trong quá trình lưu file ảnh: " + e.getMessage());
-            e.printStackTrace();
+            LogUtils.error("Failed to save screenshot", e);
         } catch (Exception e) {
-            System.err.println("Lỗi trong quá trình chụp ảnh màn hình: " + e.getMessage());
-            e.printStackTrace();
+            LogUtils.error("Failed to capture screenshot: " + e.getMessage(), e);
         }
     }
 
-    // Bắt đầu ghi video
+    // ═══════════════════════ VIDEO RECORDING ═══════════════════════
+
+    /**
+     * Starts screen recording on the connected Android device.
+     */
     public static void startRecording() {
-        if (DriverManager.getDriver() != null) {
+        if (DriverManager.getDriver() == null) {
+            LogUtils.warn("Cannot start recording — driver is null");
+            return;
+        }
+        try {
             ((AndroidDriver) DriverManager.getDriver()).startRecordingScreen(
                     new AndroidStartScreenRecordingOptions()
-                            .withBitRate(4000000) // default: 4000000
-                            .withVideoSize("1080x2400") // 720 x 1600, 1080 x 2400 pixels
-                            .withTimeLimit(Duration.ofMinutes(10))); // 10 minutes max video length
-            System.out.println("Bắt đầu ghi video cho " + DriverManager.getDriver().getCapabilities().getCapability("deviceName"));
+                            .withBitRate(4_000_000)
+                            .withVideoSize("1080x2400")
+                            .withTimeLimit(Duration.ofMinutes(10)));
+            String deviceName = String.valueOf(
+                    DriverManager.getDriver().getCapabilities().getCapability("deviceName"));
+            LogUtils.info("Started video recording on device: " + deviceName);
+        } catch (Exception e) {
+            LogUtils.error("Failed to start recording: " + e.getMessage(), e);
         }
     }
 
-    // Dừng ghi video và lưu file
-    public static void stopRecording(String videoFileName) {
-        if (DriverManager.getDriver() != null) {
-            try {
-                String base64Video = ((CanRecordScreen) ((AndroidDriver) DriverManager.getDriver())).stopRecordingScreen();
-                System.out.println("Base64 video length: " + (base64Video != null ? base64Video.length() : "null"));
-                if (base64Video != null && !base64Video.isEmpty()) {
-                    byte[] videoBytes = Base64.getDecoder().decode(base64Video);
-                    System.out.println("Video bytes length: " + videoBytes.length);
-                    File videoFile = new File(videoFileName);
-                    try (FileOutputStream fos = new FileOutputStream(videoFile)) {
-                        fos.write(videoBytes);
-                    }
-                    System.out.println("Video được lưu tại: " + videoFile.getAbsolutePath() + " (Size: " + videoFile.length() + " bytes)");
-                } else {
-                    System.out.println("Không có dữ liệu video để lưu.");
-                }
-            } catch (Exception e) {
-                System.err.println("Lỗi khi dừng ghi video: " + e.getMessage());
+    /**
+     * Stops screen recording and saves the video to the given file path.
+     *
+     * @param videoFilePath absolute path where the video file should be saved
+     */
+    public static void stopRecording(String videoFilePath) {
+        if (DriverManager.getDriver() == null) {
+            LogUtils.warn("Cannot stop recording — driver is null");
+            return;
+        }
+        try {
+            String base64Video = ((CanRecordScreen) ((AndroidDriver) DriverManager.getDriver()))
+                    .stopRecordingScreen();
+
+            if (base64Video == null || base64Video.isEmpty()) {
+                LogUtils.warn("No video data returned from stopRecordingScreen");
+                return;
             }
+
+            byte[] videoBytes = Base64.getDecoder().decode(base64Video);
+            File videoFile = new File(videoFilePath);
+
+            // Ensure parent directory exists
+            if (videoFile.getParentFile() != null) {
+                videoFile.getParentFile().mkdirs();
+            }
+
+            try (FileOutputStream fos = new FileOutputStream(videoFile)) {
+                fos.write(videoBytes);
+            }
+            LogUtils.info("Video saved: " + videoFile.getAbsolutePath()
+                    + " (" + videoFile.length() + " bytes)");
+        } catch (Exception e) {
+            LogUtils.error("Failed to stop recording: " + e.getMessage(), e);
         }
     }
 }
