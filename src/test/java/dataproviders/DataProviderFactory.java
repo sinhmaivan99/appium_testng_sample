@@ -7,114 +7,77 @@ import org.testng.annotations.DataProvider;
 
 import java.util.Arrays;
 
+/**
+ * Centralized TestNG {@link DataProvider}s.
+ * <p>
+ * For Excel-backed providers, the source workbook is configured via
+ * {@code EXCEL_DATA_FILE_PATH} in {@code config.properties}.
+ * </p>
+ */
 public class DataProviderFactory {
 
+    private static final String LOGIN_SHEET = "Login";
+    private static final String DEFAULT_DYNAMIC_ROWS = "1,2,3";
+
     @DataProvider(name = "loginSuccess")
-    public Object[][] userDataLoginSuccess() {
-        return new Object[][]{{"admin", "admin123"}, {"test", "test123"}};
+    public Object[][] loginSuccess() {
+        return new Object[][]{
+                {"admin", "admin123"},
+                {"test", "test123"}
+        };
     }
 
-    @DataProvider(name = "login_from_excel")
-    public Object[][] login_from_excel() {
-        ExcelHelpers excelHelpers = new ExcelHelpers();
-        return excelHelpers.getExcelData(
-                ConfigData.EXCEL_DATA_FILE_PATH,
-                "Login"
-        );
+    @DataProvider(name = "loginFromExcel")
+    public Object[][] loginFromExcel() {
+        return new ExcelHelpers().getExcelData(ConfigData.EXCEL_DATA_FILE_PATH, LOGIN_SHEET);
     }
 
-    @DataProvider(name = "login_from_excel_hashtable")
-    public Object[][] login_from_excel_hashtable() {
-        ExcelHelpers excelHelpers = new ExcelHelpers();
-        return excelHelpers.getDataHashTable(
-                ConfigData.EXCEL_DATA_FILE_PATH,
-                "Login",
-                2,
-                3
-        );
+    @DataProvider(name = "loginFromExcelHashTable")
+    public Object[][] loginFromExcelHashTable() {
+        return new ExcelHelpers().getDataHashTable(
+                ConfigData.EXCEL_DATA_FILE_PATH, LOGIN_SHEET, 2, 3);
     }
 
-    @DataProvider(name = "login_specific_rows")
-    public Object[][] login_specific_rows() {
-        ExcelHelpers excelHelpers = new ExcelHelpers();
-        // Đọc dữ liệu từ các dòng 1, 3
-        int[] specificRows = new int[]{1, 3};
-        return excelHelpers.getDataFromSpecificRows(
-                ConfigData.EXCEL_DATA_FILE_PATH,
-                "Login",
-                specificRows
-        );
+    @DataProvider(name = "loginSpecificRows")
+    public Object[][] loginSpecificRows() {
+        return new ExcelHelpers().getDataFromSpecificRows(
+                ConfigData.EXCEL_DATA_FILE_PATH, LOGIN_SHEET, new int[]{1, 3});
     }
 
-    @DataProvider(name = "login_specific_rows_hashtable")
-    public Object[][] login_specific_rows_hashtable() {
-        ExcelHelpers excelHelpers = new ExcelHelpers();
-        // Đọc dữ liệu từ các dòng 1, 3
-        int[] specificRows = new int[]{1, 3};
-        return excelHelpers.getDataHashTableFromSpecificRows(
-                ConfigData.EXCEL_DATA_FILE_PATH,
-                "Login",
-                specificRows
-        );
-    }
-
-    // Truyền tham số từ suite XML vào DataProvider
-
-    /**
-     * DataProvider động cho phép truyền tham số là các dòng cần đọc
-     *
-     * @param rowIndices Chuỗi chứa các chỉ số dòng, phân cách bởi dấu phẩy, ví dụ: "1,3,5"
-     * @return Dữ liệu từ các dòng được chỉ định
-     */
-    @DataProvider(name = "dynamic_rows")
-    public Object[][] dynamic_rows(ITestContext context) {
-        // Lấy tham số từ test context hoặc suite XML
-        String rowIndicesStr = context.getCurrentXmlTest().getParameter("rowIndices");
-        if (rowIndicesStr == null || rowIndicesStr.isEmpty()) {
-            // Mặc định đọc các dòng 1, 2, 3 nếu không có tham số nào được truyền
-            rowIndicesStr = "1,2,3";
-        }
-
-        // Chuyển đổi chuỗi thành mảng các số nguyên
-        int[] rowIndices = Arrays.stream(rowIndicesStr.split(","))
-                .map(String::trim)
-                .mapToInt(Integer::parseInt)
-                .toArray();
-
-        ExcelHelpers excelHelpers = new ExcelHelpers();
-        return excelHelpers.getDataFromSpecificRows(
-                ConfigData.EXCEL_DATA_FILE_PATH,
-                "Login",
-                rowIndices
-        );
+    @DataProvider(name = "loginSpecificRowsHashTable")
+    public Object[][] loginSpecificRowsHashTable() {
+        return new ExcelHelpers().getDataHashTableFromSpecificRows(
+                ConfigData.EXCEL_DATA_FILE_PATH, LOGIN_SHEET, new int[]{1, 3});
     }
 
     /**
-     * DataProvider động trả về dữ liệu dạng Hashtable
-     *
-     * @param rowIndices Chuỗi chứa các chỉ số dòng, phân cách bởi dấu phẩy, ví dụ: "1,3,5"
-     * @return Dữ liệu dạng Hashtable từ các dòng được chỉ định
+     * Reads rows specified by the {@code rowIndices} suite-XML parameter
+     * (comma-separated, e.g. {@code "1,3,5"}). Defaults to {@code "1,2,3"}.
      */
-    @DataProvider(name = "dynamic_rows_hashtable")
-    public Object[][] dynamic_rows_hashtable(ITestContext context) {
-        // Lấy tham số từ test context hoặc suite XML
-        String rowIndicesStr = context.getCurrentXmlTest().getParameter("rowIndices");
-        if (rowIndicesStr == null || rowIndicesStr.isEmpty()) {
-            // Mặc định đọc các dòng 1, 2, 3 nếu không có tham số nào được truyền
-            rowIndicesStr = "1,2,3";
-        }
+    @DataProvider(name = "dynamicRows")
+    public Object[][] dynamicRows(ITestContext context) {
+        return new ExcelHelpers().getDataFromSpecificRows(
+                ConfigData.EXCEL_DATA_FILE_PATH, LOGIN_SHEET, parseRowIndices(context));
+    }
 
-        // Chuyển đổi chuỗi thành mảng các số nguyên
-        int[] rowIndices = Arrays.stream(rowIndicesStr.split(","))
+    /** Hashtable variant of {@link #dynamicRows(ITestContext)}. */
+    @DataProvider(name = "dynamicRowsHashTable")
+    public Object[][] dynamicRowsHashTable(ITestContext context) {
+        return new ExcelHelpers().getDataHashTableFromSpecificRows(
+                ConfigData.EXCEL_DATA_FILE_PATH, LOGIN_SHEET, parseRowIndices(context));
+    }
+
+    // ═══════════════════════ INTERNAL ═══════════════════════
+
+    private static int[] parseRowIndices(ITestContext context) {
+        String raw = context.getCurrentXmlTest().getParameter("rowIndices");
+        if (raw == null || raw.isBlank()) {
+            raw = DEFAULT_DYNAMIC_ROWS;
+        }
+        return Arrays.stream(raw.split(","))
                 .map(String::trim)
+                .filter(s -> !s.isEmpty())
                 .mapToInt(Integer::parseInt)
                 .toArray();
-
-        ExcelHelpers excelHelpers = new ExcelHelpers();
-        return excelHelpers.getDataHashTableFromSpecificRows(
-                ConfigData.EXCEL_DATA_FILE_PATH,
-                "Login",
-                rowIndices
-        );
     }
 }

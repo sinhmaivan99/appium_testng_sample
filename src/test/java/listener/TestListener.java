@@ -1,7 +1,10 @@
 package listener;
 
 import constants.ConfigData;
-import helpers.*;
+import helpers.CaptureHelpers;
+import helpers.DateUtils;
+import helpers.LogUtils;
+import helpers.SystemHelpers;
 import keywords.MobileUI;
 import org.testng.ITestContext;
 import org.testng.ITestListener;
@@ -12,43 +15,39 @@ import java.time.Duration;
 import java.time.Instant;
 
 /**
- * TestNG listener that handles lifecycle events for each test method.
- * <p>
- * Responsibilities:
+ * TestNG listener that handles per-test lifecycle events.
  * <ul>
- *     <li>Starting and stopping screen recording (if enabled)</li>
- *     <li>Capturing screenshots on pass/fail (if configured)</li>
- *     <li>Attaching artifacts to Allure report</li>
- *     <li>Logging test results with duration</li>
+ *     <li>Starts/stops screen recording (when {@code RECORD_VIDEO=true})</li>
+ *     <li>Captures screenshots on pass/fail (per config flags)</li>
+ *     <li>Attaches artifacts to the Allure report</li>
+ *     <li>Logs test results with duration</li>
  * </ul>
- * </p>
  */
 public class TestListener implements ITestListener {
 
     private static final String TIMESTAMP_ATTR = "startTime";
+    private static final long POST_TEST_PAUSE_SECONDS = 2L;
+    private static final long SKIP_PAUSE_SECONDS = 1L;
 
     @Override
     public void onStart(ITestContext context) {
-        FileCleanupHelper.deleteOutputFiles();
-        LogUtils.info("▶ Suite started: " + context.getName()
-                + " at " + context.getStartDate());
+        LogUtils.info("Suite started: " + context.getName() + " at " + context.getStartDate());
     }
 
     @Override
     public void onFinish(ITestContext context) {
-        int passed = context.getPassedTests().size();
-        int failed = context.getFailedTests().size();
-        int skipped = context.getSkippedTests().size();
-        LogUtils.info("🏁 Suite finished: PASS=" + passed + " FAIL=" + failed
-                + " SKIP=" + skipped + " at " + context.getEndDate());
+        LogUtils.info("Suite finished: PASS=" + context.getPassedTests().size()
+                + " FAIL=" + context.getFailedTests().size()
+                + " SKIP=" + context.getSkippedTests().size()
+                + " at " + context.getEndDate());
     }
 
     @Override
     public void onTestStart(ITestResult result) {
         result.setAttribute(TIMESTAMP_ATTR, Instant.now());
-        LogUtils.info("➡ Test started: " + result.getName());
+        LogUtils.info("Test started: " + result.getName());
 
-        if (ConfigData.RECORD_VIDEO.equalsIgnoreCase("true")) {
+        if (ConfigData.RECORD_VIDEO) {
             SystemHelpers.createFolder(SystemHelpers.getCurrentDir() + ConfigData.RECORD_VIDEO_PATH);
             CaptureHelpers.startRecording();
         }
@@ -56,57 +55,54 @@ public class TestListener implements ITestListener {
 
     @Override
     public void onTestSuccess(ITestResult result) {
-        long durationMs = Duration.between(
-                (Instant) result.getAttribute(TIMESTAMP_ATTR), Instant.now()).toMillis();
-        LogUtils.info("✅ Test PASSED: " + result.getName() + " (" + durationMs + "ms)");
+        LogUtils.info("Test PASSED: " + result.getName() + " (" + durationMs(result) + "ms)");
 
-        if (ConfigData.SCREENSHOT_PASS.equalsIgnoreCase("true")) {
+        if (ConfigData.SCREENSHOT_PASS) {
             CaptureHelpers.captureScreenshot();
         }
-
-        if (ConfigData.RECORD_VIDEO.equalsIgnoreCase("true")) {
-            MobileUI.sleep(2);
-            CaptureHelpers.stopRecording(buildVideoFileName(result.getName()));
-        }
+        stopRecordingIfEnabled(result.getName(), POST_TEST_PAUSE_SECONDS);
     }
 
     @Override
     public void onTestFailure(ITestResult result) {
-        long durationMs = Duration.between(
-                (Instant) result.getAttribute(TIMESTAMP_ATTR), Instant.now()).toMillis();
-        LogUtils.error("❌ Test FAILED: " + result.getName() + " (" + durationMs + "ms)");
-        LogUtils.error("Cause: " + result.getThrowable());
+        LogUtils.error("Test FAILED: " + result.getName() + " (" + durationMs(result) + "ms)");
+        if (result.getThrowable() != null) {
+            LogUtils.error("Cause: " + result.getThrowable());
+        }
 
-        if (ConfigData.SCREENSHOT_FAIL.equalsIgnoreCase("true")) {
+        if (ConfigData.SCREENSHOT_FAIL) {
             CaptureHelpers.captureScreenshot();
         }
 
-        // Allure attachments
         AllureManager.saveTextLog(result.getName() + " failed: " + result.getThrowable());
         AllureManager.saveScreenshotPNG();
 
-        if (ConfigData.RECORD_VIDEO.equalsIgnoreCase("true")) {
-            MobileUI.sleep(2);
-            CaptureHelpers.stopRecording(buildVideoFileName(result.getName()));
-        }
+        stopRecordingIfEnabled(result.getName(), POST_TEST_PAUSE_SECONDS);
     }
 
     @Override
     public void onTestSkipped(ITestResult result) {
-        LogUtils.warn("⛔ Test SKIPPED: " + result.getName());
-
-        if (ConfigData.RECORD_VIDEO.equalsIgnoreCase("true")) {
-            MobileUI.sleep(1);
-            CaptureHelpers.stopRecording(buildVideoFileName(result.getName()));
-        }
+        LogUtils.warn("Test SKIPPED: " + result.getName());
+        stopRecordingIfEnabled(result.getName(), SKIP_PAUSE_SECONDS);
     }
 
-    // ═══════════════════════ PRIVATE ═══════════════════════
+    // ═══════════════════════ INTERNAL ═══════════════════════
 
-    private String buildVideoFileName(String testName) {
+    private static void stopRecordingIfEnabled(String testName, long pauseSeconds) {
+        if (!ConfigData.RECORD_VIDEO) return;
+        MobileUI.sleep(pauseSeconds);
+        CaptureHelpers.stopRecording(buildVideoFileName(testName));
+    }
+
+    private static String buildVideoFileName(String testName) {
         String timestamp = SystemHelpers.makeSlug(DateUtils.getCurrentDateTime());
         return SystemHelpers.getCurrentDir() + ConfigData.RECORD_VIDEO_PATH
                 + "/recording_" + testName + "_" + Thread.currentThread().getId()
                 + "_" + timestamp + ".mp4";
+    }
+
+    private static long durationMs(ITestResult result) {
+        Instant start = (Instant) result.getAttribute(TIMESTAMP_ATTR);
+        return start == null ? 0L : Duration.between(start, Instant.now()).toMillis();
     }
 }
